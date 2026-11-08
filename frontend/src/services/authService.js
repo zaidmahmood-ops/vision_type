@@ -19,7 +19,7 @@ export async function registerUser({ username, email, password }) {
 }
 
 export async function loginUser({ identifier, password }) {
-    const data = await apiRequest('api/login', {
+    const data = await apiRequest('/api/login', {
         method: 'POST',
         body: JSON.stringify({ email: identifier, password }), // <-- Changed 'username' to 'email'
     });
