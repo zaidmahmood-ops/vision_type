@@ -34,7 +34,7 @@ app.include_router(profile_router)
 # ==========================================
 origins = [
     "http://localhost:5173",          # Local Vite frontend dev server
-    "https://visiontype.vercel.app",   # Your future Vercel deployment URL (update this later!)
+    "https://vision-type.vercel.app",   # Your future Vercel deployment URL (update this later!)
 ]
 
 app.add_middleware(
