@@ -1,0 +1,1373 @@
+/* 1. Prevent Viewport Overflow & Remove Scrollbars */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevents unwanted white scrollbars */
+  /* 1. REQUIRED FOR SCROLLING: Limit height so content overflows */ /* Limits container to 80% of viewport height */
+  overflow-y: auto;  /* Shows active scrollbar ONLY when needed */
+  overflow-x: hidden;
+
+  /* 2. REQUIRED FOR INTERACTION: Bring above background wrappers */
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+
+}
+
+/* ==========================================================================
+   VisionType - Global Page Layout & Themed Scrollbar
+   ========================================================================== */
+
+/* 1. Global Page Setup */
+html, body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--vt-bg-primary, #121316);
+  color: var(--vt-text-primary, #d1d5db);
+
+  /* Automatic scrollbar: Appears ONLY when content overflows */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Firefox Scrollbar Styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(93, 92, 95, 0.3) var(--vt-bg-primary, rgb(3,3,49));
+  
+}
+
+/* ==========================================================================
+   2. WebKit Browsers (Chrome, Edge, Safari, Brave)
+   ========================================================================== */
+
+/* Width of the scrollbar track on the right edge */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px; /* Sleek, thin bar */
+  
+}
+
+/* Background Track (Blends seamlessly into the page background) */
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: var(--vt-bg-primary, #121316);
+  
+}
+
+/* Draggable Thumb (Subtle theme color so it doesn't distract while typing) */
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: rgba(212, 200, 23, 0.25); /* Low opacity VisionType Gold */
+  border-radius: 4px;
+  transition: background 0.2s ease-in-out;
+  
+}
+
+/* Hover State (Lights up when user hovers or drags the bar) */
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 200, 23, 0.7); /* Brighter Gold accent on hover */
+}
+
+/* Active State (When actively dragging) */
+html::-webkit-scrollbar-thumb:active,
+body::-webkit-scrollbar-thumb:active {
+  background: rgb(212, 200, 23); /* Full VisionType Gold while dragging */
+}
+
+
+#settings-button, #shuffle-button, #pvp-button, #leaderboard-button, #i-button {
+  margin-left: 35px;
+  background: transparent;
+  border: none;
+  cursor: pointer;  
+  font-size: 2.5rem;
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  color: rgb(160, 7, 71);
+  text-decoration: none;
+  position: relative;
+}
+
+#auth-slot {
+  margin-left: 3rem;
+}
+
+#login-button {
+  margin-left: auto;
+  margin-right: 4rem;
+  margin-bottom: 1rem;
+  background: transparent;
+  border: 1.5px solid rgb(160, 7, 71);
+  border-radius: 10px;
+  padding: 0.2rem 1.8rem;
+  cursor: pointer;  
+  font-size: 2.6rem;
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  color: rgb(160, 7, 71);
+  text-decoration: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+#login-button:hover {
+  background: rgba(160, 7, 71, 0.15);
+  box-shadow: 0 0 12px rgba(160, 7, 71, 0.4);
+  transform: translateY(-1px); /* Subtle lift effect on hover */
+}
+
+/* 3. Auth Card */
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 2rem;
+  background: rgba(12, 10, 29, 0.85);
+  border: 1px solid rgba(160, 7, 71, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  font-family: 'JetBrains Mono', monospace;
+  margin: 7rem;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+.auth-header h2 {
+  color: #ffffff;
+  font-size: 1.rem;
+  letter-spacing: 2px;
+  margin-bottom: 0.3rem;
+}
+
+.auth-header p {
+  color: #94a3b8;
+  font-size: 1.2rem;
+}
+
+/* 4. Sleek Underline Inputs (No Heavy Box Bars) */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.5rem;
+}
+
+
+
+.input-group input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(160, 7, 71, 0.4); /* Underline only */
+  border-radius: 0;
+  padding: 0.5rem 0;
+  color: #f8fafc;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  border-bottom-color: rgb(160, 7, 71);
+  box-shadow: 0 2px 0 0 rgb(160, 7, 71); /* Clean accent glow on line */
+}
+
+/* 5. Minimal Button & Footer */
+#auth-submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  background: rgb(160, 7, 71);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#auth-submit-btn:hover {
+  background: rgb(190, 10, 85);
+}
+
+.auth-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+#auth-toggle-btn {
+  background: none;
+  border: none;
+  color: rgb(160, 7, 71);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ==========================================
+   AUTHENTICATION ERROR NOTIFICATION STyles
+   ========================================== */
+
+.auth-error {
+    background-color: rgba(239, 68, 68, 0.15); /* Soft translucent red backdrop */
+    border: 1px solid rgba(239, 68, 68, 0.4);  /* Subtle red accent border */
+    color: #f87171;                            /* High-contrast bright light red text */
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* When hidden, standard display:none preserves your layout bounce effect */
+.auth-error.hidden {
+    display: none;
+}
+#shuffle-button:hover, #settings-button:hover, #pvp-button:hover, #leaderboard-button:hover, #i-button:hover, #login-button:hover  {
+  color: #fdf9f9;
+  
+  
+}
+
+
+
+
+
+body {
+  background-color: rgb(3, 3, 49);
+}
+
+
+
+#site-header {
+  color: rgb(160, 7, 71);
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  font-size: 1rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;    /* Keeps header items aligned on the same axis */
+  gap: 22rem;
+  user-select: none;   
+  height: 44px;          /* Clean fixed height matching your max-height */
+  margin-top: 35px;
+}
+
+#title {
+  display: flex;
+  align-items: center;   /* CRITICAL: Vertically centers text inside #title */
+  justify-content: center;
+  margin-left: 12rem;
+  margin-top: 1rem;             /* CRITICAL: Removes default browser margins on h1/p tags */
+  padding: 0;
+  line-height: 0.85;     /* CRITICAL: Removes built-in top spacing from Brush Script MT */
+  font-size: 3.4rem;       /* Adjust to your preference */
+  color: rgb(160, 7, 71);
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  user-select: none;
+}
+
+
+#nav-links {
+  display: flex;
+  align-items: center;
+  user-select: none;    
+
+}
+
+
+.hidden {
+  display: none !important;
+}
+
+#profile-button {
+  background: transparent;
+  border: 1px solid rgb(3, 3, 49); /* Changed from border-outline */
+  padding: 0.2rem 1rem;
+  cursor: pointer;  
+  font-size: 1.2rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: rgb(160, 7, 71);
+  transition: all 0.2s ease;
+}
+
+#notification-button {
+  background: transparent;
+  border: 1px solid rgb(3, 3, 49); /* Changed from border-outline */
+  padding: 0.2rem 1rem;
+  cursor: pointer;  
+  font-size: 2rem;
+  color: rgb(160, 7, 71);
+  transition: all 0.2s ease;
+}
+
+#profile-button:hover, 
+#notification-button:hover, 
+#logout-button:hover {
+ color: white;
+}
+
+/* Optional styling for the profile slot wrapper to keep items aligned */
+.user-profile-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+#view-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers items horizontally */
+    width: 100%;
+    min-height: 80vh;
+}
+
+  /* The Viewport Window (Static, Fixed Height, Clips Overflow) */
+.typing-viewport {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;    
+  color: rgba(233, 225, 219, 0.527);
+  width: 80%;
+  max-width: 1100px;
+  height: 8.4rem;
+  overflow: hidden;
+  margin: 2rem auto;
+  padding: 15px;
+  background-color: rgb(3, 3, 49);
+  border-radius: 8px;
+  font-family: monospace; 
+  font-size: 1.8rem;
+  line-height: 2rem;
+  text-align: left;  
+  column-gap: 20px;
+  row-gap: 10px; 
+  user-select: none;
+  position: relative; /* For cursor positioning */
+}
+/* Live Test HUD Counter */
+.live-hud {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 auto 8px auto;
+    color: #e2b714; /* Soft gold accent matching active state */
+    font-family: monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-left: 5px;
+}
+/* Ensure #words-wrapper acts as the relative anchor for cursor offset calculations */
+#words-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.8rem;
+  line-height: 2.5rem;
+  font-size: 1.8rem;
+  transition: transform 0.15s ease-out; 
+  position: top; /* Relative anchor for absolute #cursor */
+  width: 100%;
+}
+
+/* ==========================================
+   CONFIG BAR LAYOUT & STYLING
+   ========================================== */
+
+/* Top bar container centered above the typing test */
+.test-config-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(6, 6, 31, 0.7);
+    padding: 8px 16px;
+    border-radius: 8px;
+    margin: 0 auto 24px auto;
+    margin-top: 4rem;
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
+    position: relative;
+    color: #a0a5c0;
+    font-size: 0.9rem;
+}
+
+/* Grouping for buttons */
+.config-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dataset-group {
+    position: relative; /* Anchor point for dropdown positioning */
+}
+
+/* Config Bar Buttons */
+.config-btn, 
+.config-option-btn {
+    background: transparent;
+    border: none;
+    color: #646669;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.config-btn:hover, 
+.config-option-btn:hover {
+    color: #d1d0c5;
+}
+
+/* Active Mode Accent (Monkeytype Yellow/Gold) */
+.config-option-btn.active {
+    color: #e2b714;
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   POSITIONED DROPDOWN MENU
+   ========================================== */
+
+.config-dropdown {
+    position: absolute;
+    top: calc(100% + 8px); /* Position directly underneath button */
+    left: 0;
+    z-index: 1000; /* Floats above typing area */
+    width: 280px;
+    background: #0a0a28; /* Slightly lighter shade than rgb(3, 3, 49) background */
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+
+/* Search Box Inside Dropdown */
+.dropdown-search {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: #06061c;
+}
+
+.dropdown-search input {
+    width: 100%;
+    background: #0a0a28;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #d1d0c5;
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.dropdown-search input:focus {
+    border-color: #e2b714;
+}
+
+/* Scrollable Wordlist Options */
+.dropdown-list {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 6px 0;
+}
+
+/* Scrollbar customization */
+.dropdown-list::-webkit-scrollbar {
+    width: 6px;
+}
+.dropdown-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+/* Individual Item Rows */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #646669;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #d1d0c5;
+}
+
+.dropdown-item.selected {
+    color: #e2b714;
+    font-weight: 600;
+    background: rgba(226, 183, 20, 0.08);
+}
+
+.item-check {
+    width: 20px;
+    display: inline-block;
+    font-size: 0.8rem;
+}
+
+.dropdown-empty {
+    padding: 16px;
+    text-align: center;
+    color: #646669;
+    font-size: 0.85rem;
+}
+
+#cursor {
+  position: absolute;
+  width: 2px;
+  height: 2.2rem; 
+  background-color: #e2b714; 
+  border-radius: 1px;
+  transition: left 0.08s ease-out, top 0.08s ease-out; 
+  pointer-events: none; 
+  z-index: 10;
+}
+
+.word {
+  display: flex;
+}
+
+.letter.correct { color: white; }
+.letter.incorrect { color: #e74c3c; }
+
+
+#cursor.blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { 
+    background-color: #e2b714;
+  }
+  50% { 
+    background-color: transparent;
+  }
+}
+
+/* --- Results Screen & Parallelograms (1.3x Scaled) --- */
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  width: 78vw;
+  max-width: 1430px;
+  margin: 6rem auto 0 auto;
+  color: #d1d0c5;
+  font-family: 'JetBrains Mono', monospace;
+  animation: fadeIn 0.3s ease-out;
+  box-sizing: border-box;
+}
+
+.results-header {
+  font-size: 1.1rem;
+  color: #f8e21f;
+  margin-left: 15rem;
+  margin-bottom: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20rem;
+  align-items: center;
+}
+
+.restart-btn {
+  background: rgba(6, 6, 31, 0.9);
+  color: #d1d0c5;
+  border: none;
+  padding: 0.65rem 1.3rem;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.restart-btn:hover {
+  background: #3b3e42;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 3.9rem;
+  width: 100%;
+  align-items: start;
+}
+
+.parallelogram-box {
+  background: rgba(6, 6, 31, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 2.6rem;
+  transform: skewX(-10deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+}
+
+.parallelogram-inner {
+  transform: skewX(10deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.dataset-badge {
+  font-size: 1.05rem;
+  color: #e2b714;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.65rem;
+}
+
+.dataset-name {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.metrics-primary-row {
+  display: flex;
+  gap: 3.25rem;
+  margin-bottom: 1.9rem;
+}
+
+.metric-label {
+  font-size: 1rem;
+  color: #646669;
+  text-transform: uppercase;
+}
+
+.metric-value-wpm {
+  font-size: 4.4rem;
+  font-weight: 700;
+  color: #e2b714;
+  line-height: 1;
+}
+
+.metric-value-acc {
+  font-size: 4.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.secondary-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1.3rem;
+}
+
+.secondary-metric-label {
+  font-size: 0.9rem;
+  color: #646669;
+}
+
+.secondary-metric-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #d1d0c5;
+}
+
+.chars-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #d1d0c5;
+  margin-top: 3px;
+}
+
+.char-correct { color: #2ecc71; }
+.char-incorrect { color: #e74c3c; }
+.char-extra { color: #f39c12; }
+.char-missed { color: #95a5a6; }
+
+.chart-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.3rem;
+}
+
+.chart-title {
+  font-size: 1rem;
+  color: #646669;
+  text-transform: uppercase;
+}
+
+.chart-toggle-group {
+  display: flex;
+  gap: 8px;
+}
+
+.chart-toggle-btn {
+  background: transparent;
+  color: #646669;
+  border: none;
+  padding: 5px 13px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.chart-toggle-btn.active {
+  background: #2c2e31;
+  color: #e2b714;
+}
+
+.chart-viewport {
+  width: 100%;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-data-msg {
+  color: #646669;
+  font-size: 1rem;
+}
+
+/* --- SVG Chart Styles --- */
+
+.chart-line {
+  fill: none;
+  stroke: #e2b714;
+  stroke-width: 3.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-point {
+  fill: #e2b714;
+}
+
+.chart-bar {
+  fill: #e2b714;
+  opacity: 0.85;
+  rx: 2;
+}
+
+.chart-axis-line {
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 1.3;
+}
+
+.chart-grid-line {
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 1;
+  stroke-dasharray: 3.5;
+}
+
+.chart-label {
+  fill: #646669;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+
+/* Base Container */
+.info-container {
+  max-width: 55%;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgb(212, 200, 23);
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* leaderboard.css */
+.leaderboard-layout {
+  display: flex;
+  max-width: 1100px;
+  margin: 40px auto;
+  gap: 32px;
+  padding: 0 20px;
+  font-family: inherit;
+  color: #e2e8f0;
+}
+
+/* Left Sidebar Styles */
+.leaderboard-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menu-group {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  padding: 8px 12px 4px 12px;
+  font-weight: bold;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: #f8fafc;
+}
+
+.menu-item.active {
+  background: #eab308; /* Monkeytype gold/yellow active highlight */
+  color: #0f172a;
+  font-weight: bold;
+}
+
+.menu-item.active .icon {
+  filter: brightness(0);
+}
+
+/* Main Content Table Area */
+.leaderboard-main {
+  flex-grow: 1;
+}
+
+.table-wrapper {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  background: rgba(255, 255, 255, 0.02);
+  color: #64748b;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.leaderboard-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 0.95rem;
+}
+
+.leaderboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+.leaderboard-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.rank {
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+.username a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.username a:hover {
+  text-decoration: underline;
+}
+
+.wpm strong {
+  color: #4ade80;
+  font-size: 1.1rem;
+}
+
+.loading, .no-data, .error {
+  text-align: center;
+  color: #64748b;
+  padding: 40px !important;
+}
+
+.submode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 4px;
+}
+
+.submode-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.submode-btn:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: #f8fafc;
+}
+
+.submode-btn.active {
+  background: #eab308;
+  color: #0f172a;
+  border-color: #eab308;
+  font-weight: bold;
+}
+
+.leaderboard-top-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.cache-timer {
+  font-size: 0.85rem;
+  color: #64748b;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cache-timer strong {
+  color: #38bdf8;
+  font-variant-numeric: tabular-nums; /* Keeps numbers from jumping as they tick */
+}
+
+
+
+/* profile.css matching rgb(3, 3, 49) with yellow styling - Expanded Size */
+.profile-wrapper {
+  max-width: 1300px; /* Expanded maximum width */
+  width: 95%;
+  margin: 0 auto;
+  padding-top: 96px; /* Added an inch of padding at the top (~96px) */
+  padding-bottom: 40px;
+  padding-left: 24px;
+  padding-right: 24px;
+  color: #f1f5f9; 
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Theme background matching rgb(3, 3, 49) */
+.profile-card {
+  background-color: rgb(3, 3, 49);
+  border: 1px solid rgba(226, 183, 20, 0.15); 
+  border-radius: 10px;
+  padding: 24px 28px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+.profile-user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-user-main {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile-avatar {
+  width: 76px;
+  height: 76px;
+  background-color: rgba(226, 183, 20, 0.1);
+  border: 2px solid #e2b714;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e2b714; /* Yellow Accent */
+}
+
+.profile-user-info h2 {
+  margin: 0;
+  font-size: 2.2rem;
+  color: #e2b714; /* Yellow username */
+  font-weight: 600;
+}
+
+.profile-joined {
+  margin: 6px 0 0 0;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.profile-header-stats {
+  display: flex;
+  gap: 48px;
+}
+
+.profile-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-stat-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.profile-stat-val {
+  font-size: 2.1rem;
+  color: #f8fafc;
+  margin: 4px 0 0 0;
+  font-weight: 600;
+}
+
+/* Leaderboard Banner */
+.profile-lb-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.profile-lb-title {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profile-lb-ranks-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.profile-lb-item {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.profile-lb-mode {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  display: flex;
+  justify-content: space-between;
+}
+
+.profile-lb-mode span {
+  color: #e2b714; /* Percentile in yellow */
+}
+
+.profile-lb-val {
+  font-size: 1.5rem;
+  color: #e2b714; /* Rank in yellow */
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+/* Section Titles */
+.profile-section-title {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* PB Grid Cards */
+.profile-pb-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.profile-pb-card {
+  background-color: rgb(3, 3, 49);
+  border: 1px solid rgba(226, 183, 20, 0.15);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profile-pb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-pb-mode {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.profile-pb-rank {
+  font-size: 0.75rem;
+  color: #e2b714;
+  background-color: rgba(226, 183, 20, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.profile-pb-wpm {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #e2b714; /* Yellow WPM values */
+  margin: 6px 0 10px 0;
+}
+
+.profile-pb-substats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 10px;
+}
+
+.profile-pb-substats span {
+  color: #f1f5f9;
+}
+
+/* Heatmap Section */
+.profile-heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.profile-heatmap-grid {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.profile-heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+}
+
+.profile-heatmap-cell.level-1 { background-color: rgba(226, 183, 20, 0.3); }
+.profile-heatmap-cell.level-2 { background-color: rgba(226, 183, 20, 0.5); }
+.profile-heatmap-cell.level-3 { background-color: rgba(226, 183, 20, 0.8); }
+.profile-heatmap-cell.level-4 { background-color: #e2b714; }
+
+/* Extended Telemetry Block */
+.profile-telemetry-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.profile-words-typed-hero {
+  text-align: center;
+}
+
+.profile-words-typed-label {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.profile-words-typed-val {
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: #e2b714;
+  margin-top: 6px;
+}
+
+.profile-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.profile-telemetry-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.profile-telemetry-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-telemetry-label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.profile-telemetry-val {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-top: 4px;
+}
+
+/* 1. Ensure the parent slot acts as the positioning anchor */
+#user-profile-slot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 2. The dropdown modal positioned relative to #user-profile-slot */
+.profile-dropdown-modal {
+  position: absolute;
+  top: calc(100% + 8px); /* Sits just below the slot with a small gap */
+  right: 0;
+  width: 210px;
+  background-color: rgb(3, 3, 49);
+  border: 1px solid rgba(226, 183, 20, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+
+  /* Hidden by default, reveal on hover of #user-profile-slot */
+  opacity: 0;
+  
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+}
+
+/* 3. Reveal effect when hovering over the profile slot */
+#user-profile-slot:hover .profile-dropdown-modal {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* 4. Keep it open if the mouse moves onto the dropdown box itself */
+.profile-dropdown-modal:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Dropdown inner elements styling */
+.profile-dropdown-header {
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-user-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#dropdown-username-display {
+  font-size: 0.9rem;
+  color: #e2b714; /* Yellow accent */
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-dropdown-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+.profile-dropdown-item {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  color: #f1f5f9;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.profile-dropdown-item:hover {
+  background-color: rgba(226, 183, 20, 0.1);
+  color: #e2b714;
+}
+
+.profile-dropdown-item.logout-item {
+  color: #f87171;
+}
+
+.profile-dropdown-item.logout-item:hover {
+  background-color: rgba(248, 113, 113, 0.1);
+  color: #ef4444;
+}

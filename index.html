@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css" />
+    <title>VisionType</title>
+  </head>
+  <body>
+    <header id="site-header">
+      <h1 id="title">VisionType</h1>
+      <nav id="nav-links">
+      <button id="shuffle-button">⌨</button>
+      <button id="leaderboard-button">♜</button>
+      <button id="pvp-button">⚔</button>
+      <button id="settings-button">⚙</button>
+      <button id="i-button">ℹ</button>
+      </nav>
+      <div id="auth-slot">
+        <!-- State 1: Logged Out -->
+        <button id="login-button" class="auth-action-btn">Login</button>
+
+        <!-- State 2: Logged In (Hidden by default) -->
+        <div id="user-profile-slot" class="user-profile-slot hidden">
+          <button id="profile-button" class="auth-action-btn">
+            👤 <span id="nav-username">User</span>
+          </button>
+          <button id="notification-button" class="icon-btn" title="Notifications">✧</button>
+      
+          <!-- 👇 DROPDOWN MODAL (Hidden by default, toggled via JS) -->
+          <div id="profile-dropdown-modal" class="profile-dropdown-modal hidden">
+            <div class="profile-dropdown-header">
+              <span class="dropdown-user-label">Signed in as</span>
+              <strong id="dropdown-username-display">User</strong>
+            </div>
+            <div class="profile-dropdown-divider"></div>
+            <button class="profile-dropdown-item" id="dropdown-profile-link">Profile Dashboard</button>
+            <button class="profile-dropdown-item" id="dropdown-settings-link">Settings</button>
+            <div class="profile-dropdown-divider"></div>
+            <button class="profile-dropdown-item logout-item" id="dropdown-logout-btn">Log out</button>
+          </div>
+
+        </div>
+      </div>
+    </header>
+    <section id="view-container" class="view">
+    <!-- Your JS will put words here -->
+    </section>
+    
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
