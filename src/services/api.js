@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_BASE_URL = 'http://localhost:8000/api'; // Your FastAPI backend address
+const API_BASE_URL = 'https://vision-type.onrender.com'; // Your FastAPI backend address
 
 export async function apiRequest(endpoint, options = {}) {
   // Automatically pull the token from localStorage if it exists
