@@ -39,7 +39,7 @@ export async function recordTestResult(stats) {
                 mode_info: String(stats.testLimit)  // 👈 Converted to a clean integer (e.g. 10, 60) instead of a string
             };
 
-            await apiRequest('/scores', {
+            await apiRequest('/api/scores', {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
