@@ -11,51 +11,51 @@ export function renderPvp() {
       <p>Race head-to-head or with a group in real-time typing battles.</p>
       
       <!-- MODE SELECTION TABS -->
-      <div class="pvp-mode-tabs" style="display: flex; gap: 10px; margin-top: 20px; border-bottom: 1px solid #334155; padding-bottom: 12px;">
-        <button id="tab-quick-match" class="btn-primary" style="flex: 1; cursor: pointer;">Quick Match</button>
-        <button id="tab-custom-rooms" class="btn-secondary" style="flex: 1; cursor: pointer; background: #1e293b; color: #94a3b8; border: 1px solid #334155;">Custom Rooms</button>
+      <div class="pvp-mode-tabs">
+        <button id="tab-quick-match" class="btn-primary">Quick Match</button>
+        <button id="tab-custom-rooms" class="btn-secondary">Custom Rooms</button>
       </div>
 
       <!-- QUICK MATCH VIEW (Default Visible) -->
-      <div id="view-quick-match" class="pvp-section" style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
-        <p style="color: #cbd5e1; font-size: 0.95rem; margin: 0;">Jump into a public matchmaking queue for a battle royale style race.</p>
-        <button id="find-match-btn" class="btn-primary" style="padding: 12px; font-weight: bold;">Find Public Match</button>
+      <div id="view-quick-match" class="pvp-section">
+        <p>Jump into a public matchmaking queue for a battle royale style race.</p>
+        <button id="find-match-btn" class="btn-primary">Find Public Match</button>
       </div>
 
       <!-- CUSTOM ROOMS VIEW (Hidden by default) -->
-      <div id="view-custom-rooms" class="pvp-section" style="margin-top: 20px; display: none; flex-direction: column; gap: 15px;">
-        <p style="color: #cbd5e1; font-size: 0.95rem; margin: 0;">Play privately with friends using a custom room code.</p>
+      <div id="view-custom-rooms" class="pvp-section">
+        <p>Play privately with friends using a custom room code.</p>
         
-        <div style="display: flex; gap: 10px;">
-          <button id="btn-1v1-mode" class="btn-secondary" style="flex: 1; padding: 10px;">1v1 Mode (Max 2)</button>
-          <button id="btn-party-mode" class="btn-secondary" style="flex: 1; padding: 10px; background: #1e293b; color: #94a3b8;">Party Mode (Multi)</button>
+        <div class="custom-mode-buttons">
+          <button id="btn-1v1-mode" class="btn-secondary">1v1 Mode (Max 2)</button>
+          <button id="btn-party-mode" class="btn-secondary">Party Mode (Multi)</button>
         </div>
 
         <!-- Custom Room Action Inputs (Hidden until 1v1 or Party is selected) -->
-        <div id="custom-action-container" style="display: none; background: rgba(15, 23, 42, 0.4); padding: 12px; border-radius: 8px; border: 1px solid #334155;">
-          <p id="custom-mode-title" style="margin: 0 0 10px 0; font-size: 0.9rem; color: #38bdf8; font-weight: bold;"></p>
-          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-            <button id="create-custom-btn" class="btn-primary" style="flex: 1;">Create Room</button>
-            <button id="toggle-join-input-btn" class="btn-secondary" style="flex: 1;">Join with Code</button>
+        <div id="custom-action-container">
+          <p id="custom-mode-title"></p>
+          <div class="custom-action-buttons">
+            <button id="create-custom-btn" class="btn-primary">Create Room</button>
+            <button id="toggle-join-input-btn" class="btn-secondary">Join with Code</button>
           </div>
 
-          <div id="join-input-wrapper" style="display: none; display: flex; gap: 8px;">
-            <input type="text" id="room-code-input" placeholder="Enter Code (e.g. X9Y2)" style="padding: 8px; flex: 1; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; text-transform: uppercase;" />
-            <button id="submit-join-btn" class="btn-primary" style="padding: 8px 16px;">Connect</button>
+          <div id="join-input-wrapper">
+            <input type="text" id="room-code-input" placeholder="Enter Code (e.g. X9Y2)" />
+            <button id="submit-join-btn" class="btn-primary">Connect</button>
           </div>
         </div>
       </div>
 
       <!-- WAITING / ACTIVE ROOM VIEW (Hidden by default until connected) -->
-      <div id="pvp-room-view" style="display: none; margin-top: 20px; text-align: center;">
-        <div class="room-banner" style="background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px;">
-          <p style="margin: 0; font-size: 0.9rem; color: #94a3b8;">Room Code</p>
-          <h3 id="display-room-code" style="margin: 5px 0 0 0; color: #38bdf8; font-size: 1.5rem; letter-spacing: 2px;">----</h3>
+      <div id="pvp-room-view">
+        <div class="room-banner">
+          <p>Room Code</p>
+          <h3 id="display-room-code">----</h3>
         </div>
 
-        <p id="room-status-text" style="color: #cbd5e1; margin-bottom: 15px;">Waiting for players to join...</p>
+        <p id="room-status-text">Waiting for players to join...</p>
 
-        <button id="leave-room-btn" class="btn-danger" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; width: 100%;">
+        <button id="leave-room-btn" class="btn-danger">
           Leave Room / Disconnect
         </button>
       </div>
