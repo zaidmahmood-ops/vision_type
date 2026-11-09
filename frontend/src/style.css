@@ -246,18 +246,17 @@ body {
 }
 
 
-
 #site-header {
   color: rgb(160, 7, 71);
   font-family: 'Brush Script MT', cursive, sans-serif;
   font-size: 1rem;
   display: flex;
-  justify-content: space-between; /* Keeps logo left, login/profile right */
+  justify-content: space-between;
   align-items: center;    
   width: 100%;
   max-width: 1400px;      
   margin: 35px auto 0 auto; 
-  padding: 0 3rem;        
+  padding: 0 4rem;        
   box-sizing: border-box;
   user-select: none;   
   height: 44px;          
@@ -266,7 +265,7 @@ body {
 #title {
   display: flex;
   align-items: center;   
-  justify-content: center;
+  justify-content: flex-start;
   margin: 0;             
   padding: 0;
   line-height: 0.85;     
@@ -279,7 +278,8 @@ body {
 #nav-links {
   display: flex;
   align-items: center;
-  gap: 1.2rem;           /* 👈 CHANGED: Reduced from 2.5rem to pull the center icons closer together */
+  gap: 0.4rem;             /* Very tight, close spacing for the middle icons */
+  margin-right: 6rem;    /* 👈 Pushes the center group nicely to the left so it balances out the wider right side */
   user-select: none;    
 }
 
@@ -330,6 +330,7 @@ body {
   align-items: center;
   gap: 8px;
 }
+
 
 
 .hidden {
