@@ -1801,3 +1801,45 @@ body {
     gap: 10px;
   }
 }
+
+/* ==========================================
+   Large Desktop & Ultra-Wide Screens (Min-width: 1400px)
+   ========================================== */
+@media (min-width: 1400px) {
+  /* Expand the global header bounds */
+  #site-header {
+    max-width: 1600px;
+    padding: 0 5rem;
+  }
+
+  /* Make the leaderboard container wider and taller to comfortably display more rows */
+  .leaderboard-layout {
+    max-width: 1450px;
+    gap: 32px;
+  }
+
+  .leaderboard-sidebar {
+    width: 320px;
+  }
+
+  /* Expand profile and result view containers for large monitors */
+  .profile-wrapper {
+    max-width: 1550px;
+  }
+
+  .results-container {
+    max-width: 1600px;
+    width: 82vw;
+  }
+
+  .typing-viewport {
+    max-width: 1300px;
+    height: 9.5rem;
+    font-size: 2rem;
+  }
+
+  .pvp-card {
+    max-width: 1050px;
+    padding: 60px 80px;
+  }
+}
