@@ -17,7 +17,7 @@ export async function fetchLeaderboardData(mode = 'time', modeInfo = '60') {
   try {
     // api.js already prepends http://localhost:8000/api, so only pass /leaderboard
     const params = new URLSearchParams({ mode, mode_info: modeInfo });
-    const data = await apiRequest(`/leaderboard?${params.toString()}`);
+    const data = await apiRequest(`/api/leaderboard?${params.toString()}`);
 
     clientCache[cacheKey] = { data, timestamp: Date.now() };
     return data;
