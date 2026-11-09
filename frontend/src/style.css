@@ -89,9 +89,6 @@ body::-webkit-scrollbar-thumb:active {
   position: relative;
 }
 
-#auth-slot {
-  margin-left: 3rem;
-}
 
 #login-button {
   margin-left: auto;
@@ -115,66 +112,73 @@ body::-webkit-scrollbar-thumb:active {
   box-shadow: 0 0 12px rgba(160, 7, 71, 0.4);
   transform: translateY(-1px); /* Subtle lift effect on hover */
 }
+/* ==========================================
+   Authentication Card & Form Styles
+   ========================================== */
 
-/* 3. Auth Card */
 .auth-card {
   width: 100%;
-  max-width: 380px;
-  padding: 2rem;
-  background: rgba(12, 10, 29, 0.85);
+  max-width: min(92%, 380px); /* Responsive: scales down on phones, caps at 380px on laptops */
+  padding: 2rem 1.75rem;
+  background: rgba(3, 3, 49, 0.75); /* Integrated with your rgb(3, 3, 49) background */
   border: 1px solid rgba(160, 7, 71, 0.3);
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   font-family: 'JetBrains Mono', monospace;
-  margin: 7rem;
+  margin: 3rem auto; /* Clean vertical spacing instead of heavy 7rem margins */
+  box-sizing: border-box;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .auth-header {
   text-align: center;
-  margin-bottom: 1.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .auth-header h2 {
   color: #ffffff;
-  font-size: 1.rem;
+  font-size: 1.4rem; /* Fixed typo from 1.rem */
   letter-spacing: 2px;
   margin-bottom: 0.3rem;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .auth-header p {
   color: #94a3b8;
-  font-size: 1.2rem;
+  font-size: 0.85rem; /* Scaled down slightly for better proportion on small screens */
+  line-height: 1.4;
+  margin: 0;
 }
 
-/* 4. Sleek Underline Inputs (No Heavy Box Bars) */
+/* Sleek Underline Inputs */
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
-
-
 
 .input-group input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(160, 7, 71, 0.4); /* Underline only */
+  border-bottom: 1px solid rgba(160, 7, 71, 0.4); 
   border-radius: 0;
   padding: 0.5rem 0;
   color: #f8fafc;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem;
+  font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.2s ease;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input-group input:focus {
   border-bottom-color: rgb(160, 7, 71);
-  box-shadow: 0 2px 0 0 rgb(160, 7, 71); /* Clean accent glow on line */
+  box-shadow: 0 2px 0 0 rgb(160, 7, 71);
 }
 
-/* 5. Minimal Button & Footer */
+/* Minimal Button & Footer */
 #auth-submit-btn {
   width: 100%;
   padding: 0.75rem;
@@ -182,20 +186,21 @@ body::-webkit-scrollbar-thumb:active {
   background: rgb(160, 7, 71);
   color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   letter-spacing: 1px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 #auth-submit-btn:hover {
   background: rgb(190, 10, 85);
+  transform: translateY(-1px);
 }
 
 .auth-footer {
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
   text-align: center;
   font-size: 0.8rem;
   color: #94a3b8;
@@ -209,27 +214,32 @@ body::-webkit-scrollbar-thumb:active {
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
+  padding: 0;
+  margin-left: 4px;
+}
+
+#auth-toggle-btn:hover {
+  color: rgb(190, 10, 85);
 }
 
 /* ==========================================
-   AUTHENTICATION ERROR NOTIFICATION STyles
+   Authentication Error Notification Styles
    ========================================== */
 
 .auth-error {
-    background-color: rgba(239, 68, 68, 0.15); /* Soft translucent red backdrop */
-    border: 1px solid rgba(239, 68, 68, 0.4);  /* Subtle red accent border */
-    color: #f87171;                            /* High-contrast bright light red text */
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    margin-bottom: 1.25rem;
-    text-align: center;
-    font-weight: 500;
+  background-color: rgba(239, 68, 68, 0.15); 
+  border: 1px solid rgba(239, 68, 68, 0.4);  
+  color: #f87171;                            
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
 }
 
-/* When hidden, standard display:none preserves your layout bounce effect */
 .auth-error.hidden {
-    display: none;
+  display: none;
 }
 #shuffle-button:hover, #settings-button:hover, #pvp-button:hover, #leaderboard-button:hover, #i-button:hover, #login-button:hover  {
   color: #fdf9f9;
