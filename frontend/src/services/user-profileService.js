@@ -6,7 +6,7 @@ export async function fetchUserProfile(username = null) {
     // If no username is provided as an argument, look it up from localStorage
     const targetUsername = username || localStorage.getItem('visiontype_username') || 'TestUser';
 
-    const data = await apiRequest(`api/users/${targetUsername}`, {
+    const data = await apiRequest(`/api/users/${targetUsername}/profile`, {
       method: 'GET'
     });
 
