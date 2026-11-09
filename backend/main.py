@@ -213,21 +213,6 @@ def submit_score(
     return db_score
 
 # ==========================================
-# 3. USER PROFILE & STATS FETCH ENDPOINT
-# ==========================================
-@app.get("/api/users/{username}", response_model=schemas.UserResponse)
-def get_user_profile(username: str, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.username == username).first()
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User profile not found."
-        )
-        
-    return user
-
-# ==========================================
 # 4. LEADERBOARD ENDPOINT (USING USER PB COLUMNS)
 # ==========================================
 
