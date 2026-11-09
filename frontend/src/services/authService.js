@@ -3,7 +3,7 @@ import { apiRequest } from './api.js';
 
 export async function registerUser({ username, email, password }) {
     // Correct endpoint: /register (api.js adds /api -> /api/register)
-    const data = await apiRequest('/register', {
+    const data = await apiRequest('/api/register', {
         method: 'POST',
         body: JSON.stringify({ username, email, password }),
     });
