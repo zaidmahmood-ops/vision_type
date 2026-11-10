@@ -10,10 +10,11 @@ let socket = null;
  * @param {Object} callbacks - Event handlers (onOpen, onMessage, onError, onClose)
  */
 export function connectPvpRoom(roomId, username, action = 'join', callbacks) {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  // Always use secure wss:// for the cloud backend
+  const protocol = 'wss:';
   
-  // Explicitly point to your FastAPI backend port for local development
-  const backendHost = '127.0.0.1:8000'; 
+  // Hardcoded to your Render cloud backend host (without the protocol prefix)
+  const backendHost = 'vision-type.onrender.com'; 
   
   const wsUrl = `${protocol}//${backendHost}/ws/pvp/${roomId}?username=${encodeURIComponent(username)}&action=${action}`;
 
