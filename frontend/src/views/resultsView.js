@@ -12,81 +12,74 @@ export function renderResultsScreen(stats) {
 
     gameBoxEl.innerHTML = `
         <div class="results-container">
-            <!-- Top Metadata / Restart Action -->
-            <div class="results-header">
-                <span>Results Dashboard</span>
-                <button id="restart-test-btn" class="restart-btn">🔄 Next Test</button>
-            </div>
-
             <!-- TWO-COLUMN PARALLELOGRAM GRID -->
             <div class="results-grid">
                 
-                <!-- LEFT PARALLELOGRAM: Detailed Stats & Word Set -->
+                <!-- LEFT PARALLELOGRAM: Stats + Title Inside Bottom-Left -->
                 <div class="parallelogram-box">
                     <div class="parallelogram-inner">
-                        
-                        <!-- Word Set / Dataset Badge -->
-                        <div class="dataset-badge">
-                            dataset: <span class="dataset-name">${datasetLabel}</span> (${testTypeLabel})
-                        </div>
-
-                        <!-- Primary WPM & Accuracy Highlight -->
-                        <div class="metrics-primary-row">
-                            <div>
-                                <div class="metric-label">wpm</div>
-                                <div class="metric-value-wpm">${stats.wpm}</div>
+                        <div>
+                            <div class="dataset-badge">
+                                dataset: <span class="dataset-name">${datasetLabel}</span> (${testTypeLabel})
                             </div>
-                            <div>
-                                <div class="metric-label">acc</div>
-                                <div class="metric-value-acc">${stats.accuracy}%</div>
+                            <div class="metrics-primary-row">
+                                <div>
+                                    <div class="metric-label">wpm</div>
+                                    <div class="metric-value-wpm">${stats.wpm}</div>
+                                </div>
+                                <div>
+                                    <div class="metric-label">acc</div>
+                                    <div class="metric-value-acc">${stats.accuracy}%</div>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Secondary Metrics Grid -->
-                        <div class="secondary-metrics-grid">
-                            <div>
-                                <div class="secondary-metric-label">raw wpm</div>
-                                <div class="secondary-metric-value">${stats.rawWpm}</div>
-                            </div>
-                            <div>
-                                <div class="secondary-metric-label">consistency</div>
-                                <div class="secondary-metric-value">${stats.consistency}%</div>
-                            </div>
-                            <div>
-                                <div class="secondary-metric-label">time elapsed</div>
-                                <div class="secondary-metric-value">${stats.timeElapsed}s</div>
-                            </div>
-                            <div>
-                                <div class="secondary-metric-label" title="Correct / Incorrect / Extra / Missed">chars (c/i/e/m)</div>
-                                <div class="chars-value">
-                                    <span class="char-correct">${stats.charsCorrect}</span> / 
-                                    <span class="char-incorrect">${stats.charsIncorrect}</span> / 
-                                    <span class="char-extra">${stats.charsExtra}</span> / 
-                                    <span class="char-missed">${stats.charsMissed}</span>
+                            <div class="secondary-metrics-grid">
+                                <div>
+                                    <div class="secondary-metric-label">raw wpm</div>
+                                    <div class="secondary-metric-value">${stats.rawWpm}</div>
+                                </div>
+                                <div>
+                                    <div class="secondary-metric-label">consistency</div>
+                                    <div class="secondary-metric-value">${stats.consistency}%</div>
+                                </div>
+                                <div>
+                                    <div class="secondary-metric-label">time elapsed</div>
+                                    <div class="secondary-metric-value">${stats.timeElapsed}s</div>
+                                </div>
+                                <div>
+                                    <div class="secondary-metric-label" title="Correct / Incorrect / Extra / Missed">chars (c/i/e/m)</div>
+                                    <div class="chars-value">
+                                        <span class="char-correct">${stats.charsCorrect}</span> / 
+                                        <span class="char-incorrect">${stats.charsIncorrect}</span> / 
+                                        <span class="char-extra">${stats.charsExtra}</span> / 
+                                        <span class="char-missed">${stats.charsMissed}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Results Dashboard Title inside bottom left -->
+                        <div class="parallelogram-footer-title">Results Dashboard</div>
                     </div>
                 </div>
 
-                <!-- RIGHT PARALLELOGRAM: Graph & Mode Toggle -->
+                <!-- RIGHT PARALLELOGRAM: Graph + Next Test Button Inside Bottom-Left -->
                 <div class="parallelogram-box">
                     <div class="parallelogram-inner">
-                        
-                        <div class="chart-section-header">
-                            <span class="chart-title">wpm over time</span>
-                            <div class="chart-toggle-group">
-                                <button id="toggle-line" class="chart-toggle-btn active">Line</button>
-                                <button id="toggle-bar" class="chart-toggle-btn">Bar</button>
+                        <div>
+                            <div class="chart-section-header">
+                                <span class="chart-title">wpm over time</span>
+                                <div class="chart-toggle-group">
+                                    <button id="toggle-line" class="chart-toggle-btn active">Line</button>
+                                    <button id="toggle-bar" class="chart-toggle-btn">Bar</button>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- SVG Chart Container -->
-                        <div id="chart-viewport" class="chart-viewport">
-                            <!-- Rendered dynamically -->
+                            <div id="chart-viewport" class="chart-viewport"></div>
                         </div>
 
+                        <!-- Next Test Button inside bottom left of right box -->
+                        <div class="parallelogram-footer-action">
+                            <button id="restart-test-btn" class="restart-btn">🔄 Next Test</button>
+                        </div>
                     </div>
                 </div>
 
@@ -94,6 +87,7 @@ export function renderResultsScreen(stats) {
         </div>
     `;
 
+    // (Keep your event listeners unchanged)
     const lineBtn = document.getElementById('toggle-line');
     const barBtn = document.getElementById('toggle-bar');
 

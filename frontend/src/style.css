@@ -620,41 +620,12 @@ body {
   width: 100%;
   box-sizing: border-box;
 }
-
-
-/* Explicitly enforce button styling so it doesn't get overridden */
-.restart-btn {
-  background: rgba(6, 6, 31, 0.9) !important;
-  color: #d1d0c5 !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  padding: 0.5rem 1rem !important;
-  border-radius: 6px !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  flex-shrink: 0; /* Prevents the button from shrinking or squishing */
-}
-
-.restart-btn:hover {
-  background: #3b3e42 !important;
-  color: #ffffff !important;
-}
-
-.results-grid {
-  display: grid;
-  grid-template-columns: 0.8fr 1.4fr; /* Balanced proportions */
-  gap: 1.5rem;
-  width: 100%;
-  align-items: stretch; /* Makes both boxes match height */
-}
-
+/* Make the boxes slightly taller vertically to comfortably fit the extra elements */
 .parallelogram-box {
   background: rgba(6, 6, 31, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  padding: 2rem; /* 👈 Taller vertical padding inside the boxes */
+  padding: 1.8rem 2rem 1.4rem 2rem; /* 👈 Slightly taller bottom padding */
   transform: skewX(-8deg);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
@@ -667,6 +638,80 @@ body {
   justify-content: space-between;
   height: 100%;
 }
+
+/* Results Dashboard Title inside bottom left of left box */
+.parallelogram-footer-title {
+  font-size: 0.8rem;
+  color: #f8e21f;
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.8rem;
+}
+
+/* Next Test Button inside bottom left of right box */
+.parallelogram-footer-action {
+  margin-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.8rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.restart-btn {
+  background: rgba(6, 6, 31, 0.9) !important;
+  color: #d1d0c5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 0.35rem 0.8rem !important;
+  border-radius: 6px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.restart-btn:hover {
+  background: #3b3e42 !important;
+  color: #ffffff !important;
+}
+
+/* Column wrapper to stack the box and its matching title/button vertically */
+.results-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Space between the box and the element below it */
+}
+
+/* Title placed below the left parallelogram */
+.results-dashboard-title {
+  font-size: 0.9rem;
+  color: #f8e21f;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-family: 'JetBrains Mono', monospace;
+  padding-left: 0.2rem; /* Aligns neatly with the left edge */
+}
+
+/* Action row container for the button below the right parallelogram */
+.results-action-row {
+  display: flex;
+  justify-content: flex-start; /* Aligns button to the left side of the right box */
+  padding-left: 0.2rem;
+}
+
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.4fr; /* Balanced proportions */
+  gap: 1.5rem;
+  width: 100%;
+  align-items: stretch; /* Makes both boxes match height */
+}
+
+
 
 .chart-viewport {
   width: 100%;
