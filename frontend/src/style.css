@@ -593,84 +593,97 @@ body {
   }
 }
 
-/* --- Results Screen & Parallelograms (1.3x Scaled) --- */
+/* --- Results Dashboard: Narrower & Taller --- */
 
 .results-container {
   display: flex;
   flex-direction: column;
-  width: 78vw;
-  max-width: 1430px;
-  margin: 6rem auto 0 auto;
+  width: 100%;
+  max-width: 900px; /* 👈 Forces it to be much less wide on large monitors */
+  margin: 3rem auto 0 auto; /* Centers it neatly under your header */
   color: #d1d0c5;
   font-family: 'JetBrains Mono', monospace;
   animation: fadeIn 0.3s ease-out;
   box-sizing: border-box;
+  padding: 0 1rem;
 }
 
 .results-header {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: #f8e21f;
-  margin-left: 15rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   text-transform: uppercase;
-  letter-spacing: 1.3px;
+  letter-spacing: 1.2px;
   display: flex;
-  justify-content: flex-start;
-  gap: 20rem;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+
+/* Explicitly enforce button styling so it doesn't get overridden */
 .restart-btn {
-  background: rgba(6, 6, 31, 0.9);
-  color: #d1d0c5;
-  border: none;
-  padding: 0.65rem 1.3rem;
-  border-radius: 7px;
-  font-family: inherit;
-  font-size: 1.05rem;
-  font-weight: 600;
+  background: rgba(6, 6, 31, 0.9) !important;
+  color: #d1d0c5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
   cursor: pointer;
   transition: background 0.15s ease;
+  flex-shrink: 0; /* Prevents the button from shrinking or squishing */
 }
 
 .restart-btn:hover {
-  background: #3b3e42;
+  background: #3b3e42 !important;
+  color: #ffffff !important;
 }
 
 .results-grid {
   display: grid;
-  grid-template-columns: 1fr 1.3fr;
-  gap: 3.9rem;
+  grid-template-columns: 0.8fr 1.4fr; /* Balanced proportions */
+  gap: 1.5rem;
   width: 100%;
-  align-items: start;
+  align-items: stretch; /* Makes both boxes match height */
 }
 
 .parallelogram-box {
   background: rgba(6, 6, 31, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  padding: 2.6rem;
-  transform: skewX(-10deg);
+  padding: 2rem; /* 👈 Taller vertical padding inside the boxes */
+  transform: skewX(-8deg);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
 }
 
 .parallelogram-inner {
-  transform: skewX(10deg);
+  transform: skewX(8deg);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
 }
 
+.chart-viewport {
+  width: 100%;
+  height: 220px; /* 👈 Made the chart taller vertically */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dataset-badge {
-  font-size: 1.05rem;
+  font-size: 0.85rem;
   color: #e2b714;
   text-transform: uppercase;
-  letter-spacing: 1.3px;
-  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 0.65rem;
+  padding-bottom: 0.4rem;
 }
 
 .dataset-name {
@@ -680,25 +693,25 @@ body {
 
 .metrics-primary-row {
   display: flex;
-  gap: 3.25rem;
-  margin-bottom: 1.9rem;
+  gap: 2rem;
+  margin-bottom: 1.2rem;
 }
 
 .metric-label {
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: #646669;
   text-transform: uppercase;
 }
 
 .metric-value-wpm {
-  font-size: 4.4rem;
+  font-size: 3rem; /* Scaled down from 4.4rem */
   font-weight: 700;
   color: #e2b714;
   line-height: 1;
 }
 
 .metric-value-acc {
-  font-size: 4.4rem;
+  font-size: 3rem; /* Scaled down from 4.4rem */
   font-weight: 700;
   color: #ffffff;
   line-height: 1;
@@ -707,27 +720,27 @@ body {
 .secondary-metrics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.3rem;
+  gap: 0.8rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 1.3rem;
+  padding-top: 0.9rem;
 }
 
 .secondary-metric-label {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   color: #646669;
 }
 
 .secondary-metric-value {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #d1d0c5;
 }
 
 .chars-value {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #d1d0c5;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 .char-correct { color: #2ecc71; }
@@ -739,27 +752,27 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.3rem;
+  margin-bottom: 0.8rem;
 }
 
 .chart-title {
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: #646669;
   text-transform: uppercase;
 }
 
 .chart-toggle-group {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .chart-toggle-btn {
   background: transparent;
   color: #646669;
   border: none;
-  padding: 5px 13px;
-  border-radius: 5px;
-  font-size: 1rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
   cursor: pointer;
   font-family: inherit;
   transition: all 0.15s ease;
@@ -770,25 +783,18 @@ body {
   color: #e2b714;
 }
 
-.chart-viewport {
-  width: 100%;
-  height: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
 
 .no-data-msg {
   color: #646669;
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
 /* --- SVG Chart Styles --- */
-
 .chart-line {
   fill: none;
   stroke: #e2b714;
-  stroke-width: 3.25;
+  stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -805,19 +811,40 @@ body {
 
 .chart-axis-line {
   stroke: rgba(255, 255, 255, 0.15);
-  stroke-width: 1.3;
+  stroke-width: 1;
 }
 
 .chart-grid-line {
   stroke: rgba(255, 255, 255, 0.04);
   stroke-width: 1;
-  stroke-dasharray: 3.5;
+  stroke-dasharray: 3;
 }
 
 .chart-label {
   fill: #646669;
-  font-size: 11px;
+  font-size: 10px;
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- Responsive Media Query adjustments for smaller viewports --- */
+@media (max-width: 768px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .parallelogram-box {
+    transform: none; /* Removes skew on mobile for perfect readability and touch bounds */
+  }
+
+  .parallelogram-inner {
+    transform: none;
+  }
+
+  .metric-value-wpm, 
+  .metric-value-acc {
+    font-size: 2.5rem;
+  }
 }
 
 
@@ -1842,4 +1869,93 @@ body {
     max-width: 1050px;
     padding: 60px 80px;
   }
+}
+
+
+/* ==========================================
+   Compact Embedded PvP & Results Controls
+   ========================================== */
+
+.pvp-card-compact, 
+.results-container-compact {
+  background: rgba(3, 3, 49, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px 24px;
+  max-width: 750px;
+  width: 95%;
+  margin: 1.5rem auto;
+  box-sizing: border-box;
+  color: #f1f5f9;
+  font-family: 'JetBrains Mono', monospace;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.pvp-card-compact h2, 
+.results-container-compact .results-header span {
+  font-size: 1.25rem;
+  color: #fbbf24;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pvp-card-compact p, 
+.results-container-compact p {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0 0 16px 0;
+}
+
+/* Compact Media Control Integration Grid */
+.compact-media-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.compact-metric-box {
+  background: rgba(6, 6, 31, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.compact-metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e2b714;
+  line-height: 1.1;
+}
+
+.compact-metric-label {
+  font-size: 0.75rem;
+  color: #646669;
+  text-transform: uppercase;
+}
+
+/* Compact Input & Buttons */
+.compact-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.compact-input-group input {
+  background: rgba(3, 3, 49, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  flex: 1;
+}
+
+.compact-input-group input:focus {
+  border-color: #fbbf24;
 }

@@ -3,61 +3,44 @@ import { connectPvpRoom, sendPvpMessage, disconnectPvpRoom } from '../services/p
 
 let currentRoomId = null;
 
-// 1. PURE TEMPLATE FUNCTION
+// 1. COMPACT TEMPLATE FUNCTION (Integrated into media controls style)
 export function renderPvp() {
   return `
-    <div class="card pvp-card">
+    <div class="pvp-card-compact">
       <h2>PvP Mode ⚔</h2>
-      <p>Race head-to-head or with a group in real-time typing battles.</p>
+      <p>Head-to-head live typing battle</p>
       
       <!-- MODE SELECTION TABS -->
-      <div class="pvp-mode-tabs">
-        <button id="tab-quick-match" class="btn-primary">Quick Match</button>
-        <button id="tab-custom-rooms" class="btn-secondary">Custom Rooms</button>
+      <div class="pvp-mode-tabs" style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <button id="tab-quick-match" class="btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">Quick Match</button>
+        <button id="tab-custom-rooms" class="btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">Custom Room</button>
       </div>
 
-      <!-- QUICK MATCH VIEW (Default Visible) -->
-      <div id="view-quick-match" class="pvp-section">
-        <p>Jump into a public matchmaking queue for a battle royale style race.</p>
-        <button id="find-match-btn" class="btn-primary">Find Public Match</button>
+      <!-- QUICK MATCH VIEW -->
+      <div id="view-quick-match" class="pvp-section" style="margin-top: 0;">
+        <button id="find-match-btn" class="btn-primary" style="width: 100%; padding: 8px;">Find Public Match</button>
       </div>
 
-      <!-- CUSTOM ROOMS VIEW (Hidden by default) -->
-      <div id="view-custom-rooms" class="pvp-section">
-        <p>Play privately with friends using a custom room code.</p>
+      <!-- CUSTOM ROOMS VIEW (Hidden initially) -->
+      <div id="view-custom-rooms" class="pvp-section" style="display: none; margin-top: 0;">
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <button id="btn-1v1-mode" class="btn-secondary" style="flex:1; padding: 6px; font-size: 0.8rem;">1v1</button>
+          <button id="btn-party-mode" class="btn-secondary" style="flex:1; padding: 6px; font-size: 0.8rem;">Party</button>
+        </div>
         
-        <div class="custom-mode-buttons">
-          <button id="btn-1v1-mode" class="btn-secondary">1v1 Mode (Max 2)</button>
-          <button id="btn-party-mode" class="btn-secondary">Party Mode (Multi)</button>
-        </div>
-
-        <!-- Custom Room Action Inputs (Hidden until 1v1 or Party is selected) -->
-        <div id="custom-action-container">
-          <p id="custom-mode-title"></p>
-          <div class="custom-action-buttons">
-            <button id="create-custom-btn" class="btn-primary">Create Room</button>
-            <button id="toggle-join-input-btn" class="btn-secondary">Join with Code</button>
-          </div>
-
-          <div id="join-input-wrapper">
-            <input type="text" id="room-code-input" placeholder="Enter Code (e.g. X9Y2)" />
-            <button id="submit-join-btn" class="btn-primary">Connect</button>
-          </div>
+        <div class="compact-input-group">
+          <input type="text" id="room-code-input" placeholder="Room Code" />
+          <button id="create-custom-btn" class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">Create</button>
+          <button id="submit-join-btn" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Join</button>
         </div>
       </div>
 
-      <!-- WAITING / ACTIVE ROOM VIEW (Hidden by default until connected) -->
-      <div id="pvp-room-view">
-        <div class="room-banner">
-          <p>Room Code</p>
-          <h3 id="display-room-code">----</h3>
+      <!-- WAITING / ACTIVE ROOM VIEW -->
+      <div id="pvp-room-view" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px;">
+          <span style="font-size: 0.8rem; color: #3bce16;">Connected: <strong id="display-room-code" style="color:#fbbf24">----</strong></span>
+          <button id="leave-room-btn" class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem; width: auto;">Leave</button>
         </div>
-
-        <p id="room-status-text">Waiting for players to join...</p>
-
-        <button id="leave-room-btn" class="btn-danger">
-          Leave Room / Disconnect
-        </button>
       </div>
     </div>
   `;
@@ -65,139 +48,52 @@ export function renderPvp() {
 
 // 2. EVENT BINDER
 export function setupPvpEvents(container) {
-  // Tabs & Views
   const tabQuickMatch = container.querySelector('#tab-quick-match');
   const tabCustomRooms = container.querySelector('#tab-custom-rooms');
   const viewQuickMatch = container.querySelector('#view-quick-match');
   const viewCustomRooms = container.querySelector('#view-custom-rooms');
-
-  // Custom sub-modes
-  const btn1v1 = container.querySelector('#btn-1v1-mode');
-  const btnParty = container.querySelector('#btn-party-mode');
-  const customActionContainer = container.querySelector('#custom-action-container');
-  const customModeTitle = container.querySelector('#custom-mode-title');
   const createCustomBtn = container.querySelector('#create-custom-btn');
-  const toggleJoinInputBtn = container.querySelector('#toggle-join-input-btn');
-  const joinInputWrapper = container.querySelector('#join-input-wrapper');
-  const roomCodeInput = container.querySelector('#room-code-input');
   const submitJoinBtn = container.querySelector('#submit-join-btn');
-
-  // Room view items
-  const lobbyTabsAndViews = container.querySelector('.pvp-mode-tabs'); // We can hide tabs when inside a room
+  const roomCodeInput = container.querySelector('#room-code-input');
   const roomView = container.querySelector('#pvp-room-view');
   const displayRoomCode = container.querySelector('#display-room-code');
-  const roomStatusText = container.querySelector('#room-status-text');
   const leaveRoomBtn = container.querySelector('#leave-room-btn');
   const findMatchBtn = container.querySelector('#find-match-btn');
 
-  let selectedSubMode = '1v1'; // Default custom submode
+  let selectedSubMode = '1v1';
 
-  // Tab Switching Logic
   if (tabQuickMatch && tabCustomRooms) {
     tabQuickMatch.addEventListener('click', () => {
-      tabQuickMatch.style.background = '#3b82f6';
-      tabQuickMatch.style.color = '#fff';
-      tabCustomRooms.style.background = '#1e293b';
-      tabCustomRooms.style.color = '#94a3b8';
-      
-      viewQuickMatch.style.display = 'flex';
+      viewQuickMatch.style.display = 'block';
       viewCustomRooms.style.display = 'none';
     });
-
     tabCustomRooms.addEventListener('click', () => {
-      tabCustomRooms.style.background = '#3b82f6';
-      tabCustomRooms.style.color = '#fff';
-      tabQuickMatch.style.background = '#1e293b';
-      tabQuickMatch.style.color = '#94a3b8';
-
-      viewCustomRooms.style.display = 'flex';
+      viewCustomRooms.style.display = 'block';
       viewQuickMatch.style.display = 'none';
     });
   }
 
-  // Custom Sub-Mode Selection (1v1 vs Party)
-  if (btn1v1 && btnParty) {
-    btn1v1.addEventListener('click', () => {
-      selectedSubMode = '1v1';
-      btn1v1.style.background = '#3b82f6';
-      btn1v1.style.color = '#fff';
-      btnParty.style.background = '#1e293b';
-      btnParty.style.color = '#94a3b8';
-      
-      customActionContainer.style.display = 'block';
-      customModeTitle.textContent = '1v1 Mode Selected (Capacity: 2 Players)';
-    });
-
-    btnParty.addEventListener('click', () => {
-      selectedSubMode = 'party';
-      btnParty.style.background = '#3b82f6';
-      btnParty.style.color = '#fff';
-      btn1v1.style.background = '#1e293b';
-      btn1v1.style.color = '#94a3b8';
-
-      customActionContainer.style.display = 'block';
-      customModeTitle.textContent = 'Party Mode Selected (Capacity: Up to 8 Players)';
-    });
-  }
-
-  // Toggle join code text input visibility
-  if (toggleJoinInputBtn && joinInputWrapper) {
-    toggleJoinInputBtn.addEventListener('click', () => {
-      joinInputWrapper.style.display = joinInputWrapper.style.display === 'none' ? 'flex' : 'none';
-    });
-  }
-
-  // Helper to transition UI into active room session
   function enterRoom(roomId, action) {
     currentRoomId = roomId;
-
     connectPvpRoom(roomId, 'TestUser', action, {
       onOpen: () => {
-        console.log(`Connected to room: ${roomId} [Mode: ${selectedSubMode}]`);
         if (viewQuickMatch) viewQuickMatch.style.display = 'none';
         if (viewCustomRooms) viewCustomRooms.style.display = 'none';
-        if (tabQuickMatch) tabQuickMatch.parentElement.style.display = 'none'; // hide tabs banner
         if (roomView) roomView.style.display = 'block';
         if (displayRoomCode) displayRoomCode.textContent = roomId;
       },
-      onMessage: (data) => {
-        console.log('Room event:', data);
-        if (data.event === 'player_joined') {
-          if (roomStatusText) {
-            const maxCap = selectedSubMode === '1v1' ? '2' : '8';
-            roomStatusText.textContent = `Players in room: ${data.total_players}/${maxCap} (${data.username} joined)`;
-          }
-        } else if (data.event === 'player_left') {
-          if (roomStatusText) {
-            roomStatusText.textContent = `Player left. Total players: ${data.total_players}`;
-          }
-        }
-      },
-      onError: (err) => {
-        console.error('Connection error:', err);
-        leaveRoomStateOnly();
-      },
-      onClose: () => {
-        console.log('Disconnected.');
-      }
+      onError: () => leaveRoomStateOnly(),
+      onClose: () => leaveRoomStateOnly()
     });
   }
 
   function leaveRoomStateOnly() {
     currentRoomId = null;
     if (roomView) roomView.style.display = 'none';
-    if (tabQuickMatch && tabQuickMatch.parentElement) tabQuickMatch.parentElement.style.display = 'flex';
-    if (viewQuickMatch) viewQuickMatch.style.display = 'flex'; // Reset back to quick match tab
+    if (viewQuickMatch) viewQuickMatch.style.display = 'block';
     if (roomCodeInput) roomCodeInput.value = '';
-    if (roomStatusText) roomStatusText.textContent = 'Waiting for players to join...';
   }
 
-  function leaveRoom() {
-    disconnectPvpRoom();
-    leaveRoomStateOnly();
-  }
-
-  // Action Button Triggers
   if (createCustomBtn) {
     createCustomBtn.addEventListener('click', () => {
       const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -208,23 +104,18 @@ export function setupPvpEvents(container) {
   if (submitJoinBtn) {
     submitJoinBtn.addEventListener('click', () => {
       const code = roomCodeInput.value.trim().toUpperCase();
-      if (code) {
-        enterRoom(code, 'join');
-      } else {
-        alert('Please enter a valid room code.');
-      }
+      if (code) enterRoom(code, 'join');
     });
   }
 
   if (findMatchBtn) {
-    findMatchBtn.addEventListener('click', () => {
-      alert('Quick Match matchmaking queueing will be wired up next!');
-    });
+    findMatchBtn.addEventListener('click', () => alert('Matchmaking queue starting...'));
   }
 
   if (leaveRoomBtn) {
     leaveRoomBtn.addEventListener('click', () => {
-      leaveRoom();
+      disconnectPvpRoom();
+      leaveRoomStateOnly();
     });
   }
 }
