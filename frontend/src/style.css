@@ -657,7 +657,10 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 0.8rem;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between; /* 👈 Pushes button to the left and toggles to the right with space between */
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .restart-btn {

@@ -68,10 +68,6 @@ export function renderResultsScreen(stats) {
                         <div>
                             <div class="chart-section-header">
                                 <span class="chart-title">wpm over time</span>
-                                <div class="chart-toggle-group">
-                                    <button id="toggle-line" class="chart-toggle-btn active">Line</button>
-                                    <button id="toggle-bar" class="chart-toggle-btn">Bar</button>
-                                </div>
                             </div>
                             <div id="chart-viewport" class="chart-viewport"></div>
                         </div>
@@ -79,6 +75,10 @@ export function renderResultsScreen(stats) {
                         <!-- Next Test Button inside bottom left of right box -->
                         <div class="parallelogram-footer-action">
                             <button id="restart-test-btn" class="restart-btn">🔄 Next Test</button>
+                            <div class="chart-toggle-group">
+                                    <button id="toggle-line" class="chart-toggle-btn active">Line</button>
+                                    <button id="toggle-bar" class="chart-toggle-btn">Bar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
