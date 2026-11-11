@@ -20,6 +20,7 @@ let keydownHandler = null;
 let cursorEl = null;
 let gameBoxEl = null;
 let wordsWrapperEl = null;
+let mobileInputEl = null;
 let wordElements = [];
 let hasStarted = false;
 let isDropdownOpen = false;
@@ -68,6 +69,9 @@ export async function initTypingGame() {
     const currentDatasetName = DATASET_REGISTRY[currentDatasetKey]?.name || currentDatasetKey;
 
     gameBoxEl.innerHTML = `
+        <!-- HIDDEN INPUT FOR MOBILE KEYBOARD TRIGGER -->
+        <textarea id="mobile-keyboard-input" aria-label="Mobile typing input" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" style="position: absolute; opacity: 0; pointer-events: none; height: 0; width: 0;"></textarea>
+
         <!-- TOP CONFIG BAR -->
         <div id="test-config-bar" class="test-config-bar">
             <div class="config-group dataset-group">
@@ -105,6 +109,7 @@ export async function initTypingGame() {
 
     cursorEl = document.getElementById('cursor');
     wordsWrapperEl = document.getElementById('words-wrapper');
+    mobileInputEl = document.getElementById('mobile-keyboard-input');
 
     setupConfigBarListeners();
     renderSubOptions();
@@ -117,8 +122,28 @@ export async function initTypingGame() {
 
     updateLiveHUD();
 
+    // Event listeners for physical & mobile keyboards
     keydownHandler = handleKeyDown;
     window.addEventListener('keydown', keydownHandler);
+
+    gameBoxEl.addEventListener('click', () => {
+        mobileInputEl?.focus();
+    });
+
+    mobileInputEl?.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (!val) return;
+        const char = val[val.length - 1];
+        e.target.value = '';
+        processTypedKey(char);
+    });
+
+    mobileInputEl?.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace') {
+            e.preventDefault();
+            processTypedKey('Backspace');
+        }
+    });
 
     checkLineShift();
     setTimeout(() => updateCursor(), 50);
@@ -135,6 +160,7 @@ export function cleanupTypingGame() {
     cursorEl = null;
     gameBoxEl = null;
     wordsWrapperEl = null;
+    mobileInputEl = null;
 }
 
 function setupConfigBarListeners() {
@@ -331,7 +357,11 @@ function updateLiveHUD() {
 function handleKeyDown(event) {
     if (isDropdownOpen) return;
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(event.key)) return;
+    if (event.key === ' ') event.preventDefault();
+    processTypedKey(event.key);
+}
 
+function processTypedKey(key) {
     if (!hasStarted) {
         hasStarted = true;
         cursorEl?.classList.remove('blink');
@@ -342,8 +372,7 @@ function handleKeyDown(event) {
     if (!activeWord) return;
     const letters = activeWord.children;
 
-    if (event.key === ' ') {
-        event.preventDefault();
+    if (key === ' ') {
         if (currentLetterIndex === 0) return;
 
         if (currentLetterIndex < letters.length) {
@@ -373,7 +402,7 @@ function handleKeyDown(event) {
         return;
     }
 
-    if (event.key === 'Backspace') {
+    if (key === 'Backspace') {
         if (currentLetterIndex > 0) {
             currentLetterIndex--;
             const target = letters[currentLetterIndex];
@@ -404,10 +433,10 @@ function handleKeyDown(event) {
         return;
     }
 
-    if (event.key.length === 1) {
+    if (key.length === 1) {
         if (currentLetterIndex < letters.length) {
             const targetLetter = letters[currentLetterIndex];
-            if (event.key === targetLetter.textContent) {
+            if (key === targetLetter.textContent) {
                 targetLetter.classList.add('correct');
                 charsCorrect++;
             } else {
@@ -457,16 +486,12 @@ function finishTest() {
         perSecondWpmLog
     };
 
-    // 1. Record the result (this internally handles localStorage caching AND backend POST sync)
     recordTestResult(statsData);
-
-    // 2. Leverage imported history utility functions to verify local state
     const currentHistory = getLocalTestHistory();
     console.log(`Test completed! Total records now in local storage: ${currentHistory.length}`);
-
-    // 3. Transition to results screen view
     renderResultsScreen(statsData);
 }
+
 export function updateCursor() {
     const activeWord = wordElements[currentWordIndex];
     if (!activeWord || !cursorEl || !wordsWrapperEl) return;

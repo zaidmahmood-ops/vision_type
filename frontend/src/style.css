@@ -1174,7 +1174,6 @@ body {
   }
 }
 
-/* 2. Tablets and Large Phones (Max-width: 768px) */
 @media (max-width: 768px) {
   #site-header {
     padding: 0 1rem;
@@ -1183,6 +1182,39 @@ body {
   
   #title {
     font-size: 2.8rem;
+  }
+
+  /* Header navigation buttons scaling */
+  #nav-links button {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  #nav-links button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Test config bar stacking & wrapping */
+  .test-config-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    margin-bottom: 15px;
+  }
+
+  .config-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .config-option-btn, .config-btn {
+    padding: 4px 8px;
+    font-size: 12px;
   }
 
   /* Leaderboard stacking */
