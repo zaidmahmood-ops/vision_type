@@ -4,12 +4,13 @@ from typing import Dict, List
 
 router = APIRouter()
 
+MAX_PLAYERS_PER_ROOM = 6
+
 # In-memory room storage dictionary
 # Structure: { 
 #   "ROOM123": {
 #       "host": "Alice",
-#       "mode": "1v1", # or "party"
-#       "max_players": 2, # 2 for 1v1, up to 8 for party
+#       "max_players": 6,
 #       "status": "waiting", 
 #       "players": [ {"username": "Alice", "websocket": ws_obj}, ... ]
 #   } 
@@ -21,8 +22,7 @@ async def pvp_websocket_endpoint(
     websocket: WebSocket, 
     room_id: str, 
     username: str = "Anonymous", 
-    action: str = "join",
-    mode: str = "1v1" # Accept mode from query params
+    action: str = "join"
 ):
     await websocket.accept()
     room_id = room_id.upper()
@@ -41,20 +41,18 @@ async def pvp_websocket_endpoint(
 
     # Initialize room if it's being newly created
     if room_id not in active_rooms:
-        max_cap = 2 if mode == "1v1" else 8
         active_rooms[room_id] = {
             "host": username,
-            "mode": mode,
-            "max_players": max_cap,
+            "max_players": MAX_PLAYERS_PER_ROOM,
             "status": "waiting",
             "players": []
         }
 
     room = active_rooms[room_id]
 
-    # 3. CAPACITY CHECK (Respects the room's actual max capacity)
+    # 3. CAPACITY CHECK (Strictly capped at 6 players)
     if len(room["players"]) >= room["max_players"]:
-        await websocket.send_json({"error": f"Room is full (Max {room['max_players']} players for this mode)"})
+        await websocket.send_json({"error": f"Room is full (Max {room['max_players']} players allowed)"})
         await websocket.close(code=4000)
         return
 
@@ -68,14 +66,13 @@ async def pvp_websocket_endpoint(
     player_info = {"username": username, "websocket": websocket}
     room["players"].append(player_info)
 
-    print(f"Player {username} joined room {room_id} [{room['mode']}]. Total: {len(room['players'])}/{room['max_players']}")
+    print(f"Player {username} joined room {room_id}. Total: {len(room['players'])}/{room['max_players']}")
 
-    # Broadcast player joined event with the room's actual max capacity
+    # Broadcast player joined event with max capacity = 6
     await broadcast_to_room(room_id, {
         "event": "player_joined",
         "username": username,
         "host": room["host"],
-        "mode": room["mode"],
         "total_players": len(room["players"]),
         "max_players": room["max_players"]
     })
