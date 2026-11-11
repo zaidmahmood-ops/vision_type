@@ -1178,21 +1178,33 @@ body {
   #site-header {
     padding: 0 1rem;
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
   }
   
   #title {
-    font-size: 2.8rem;
+    font-size: 2.2rem;
   }
 
-  /* Header navigation buttons scaling */
+  /* Move auth slot (login) up next to the title on mobile */
+  #auth-slot {
+    order: 1;
+  }
+
+  /* Make nav links / logos larger and properly sized on phone */
+  #nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 1.2rem;
+  }
+
   #nav-links button {
-    padding: 6px;
-    font-size: 14px;
-  }
-
-  #nav-links button svg {
-    width: 18px;
-    height: 18px;
+    font-size: 1.6rem; /* Increases text symbol logo size */
+    padding: 8px;
   }
 
   /* Test config bar stacking & wrapping */
@@ -1271,18 +1283,36 @@ body {
 @media (max-width: 480px) {
   #site-header {
     height: auto;
-    flex-direction: column;
-    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  #title {
+    font-size: 1.8rem;
+  }
+
+  #auth-slot {
+    order: 1;
   }
 
   #nav-links {
+    order: 3;
+    width: 100%;
     margin-right: 0;
-    gap: 0.8rem;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  #nav-links button {
+    font-size: 1.5rem; /* Keeps logos comfortably readable */
   }
 
   #login-button {
-    font-size: 2rem;
-    padding: 0.1rem 1rem;
+    font-size: 1rem;
+    padding: 0.3rem 0.8rem;
   }
 
   .leaderboard-sidebar {
