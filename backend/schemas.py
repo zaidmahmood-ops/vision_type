@@ -148,3 +148,12 @@ class UserProfileResponse(BaseModel):
     activity_days: List[ActivityDay]
 
     model_config = ConfigDict(from_attributes=True)
+
+class UserRegisterResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    username: str
+    email: str
+    model_config = ConfigDict(from_attributes=True)
+
+    

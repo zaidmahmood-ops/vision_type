@@ -1,0 +1,37 @@
+[33m66976ce[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: commit: added secure password hashing using bcrypt and passlib
+[33m0e963aa[m HEAD@{1}: commit: added vision-type website icon
+[33m47ca17b[m HEAD@{2}: commit: improved pvp mode ui, added pvp room host, multiplayer room test config settings
+[33m531844f[m HEAD@{3}: commit: change multiplayer room capacity from max cap of 2 to 6 players
+[33m9bc32d5[m HEAD@{4}: commit: fixed typing errors caused by last commit, mobile layout tweaks
+[33m54ea82e[m HEAD@{5}: commit: added html - allows typing on phones (through text/input focus area, added css media queries to optimize phone layout for typing test
+[33mca22e4a[m HEAD@{6}: commit: tweaked site header icon context - to match on different devices (phones)
+[33m3f0f46d[m HEAD@{7}: commit: updated next test button to be first in line - (tab/enter shortcut convenience), moved line/bar chart option bottom right
+[33mebbb554[m HEAD@{8}: commit: transformed results dashboard title, next test button, to bottom of respective parallelograms - results screen
+[33m9afffaf[m HEAD@{9}: commit: updated results screen css and pvp css
+[33m702ab87[m HEAD@{10}: commit: changed pvp endpoint in frontend, to match live deployment server
+[33m70844cf[m HEAD@{11}: commit: changed typing viewport height on large / wide monitor media query preset for typing viewport's neater look
+[33m5ff2c2d[m HEAD@{12}: commit: added media queries for large / wide screen monitors
+[33mdd5ab32[m HEAD@{13}: commit: updated historyService endpoint, for sending typing test data to database
+[33m820126f[m HEAD@{14}: commit: added media queries, added temporary leaderboard re-design
+[33m4802cb0[m HEAD@{15}: commit: edited padding for auth card (login/register)
+[33m5e72923[m HEAD@{16}: commit: changed css styles for login and register forms - so they are smaller screen friendly
+[33m07c6d00[m HEAD@{17}: commit: fixed api endpoint for registration
+[33m3824f03[m HEAD@{18}: commit: refactored css: site header
+[33mc623865[m HEAD@{19}: commit: added temporary css to pvp.js, refactored the css for site header to adjust to devices of different length, though further improvements are required for mobile
+[33m3cd0069[m HEAD@{20}: commit: corrected endpoint variable for leaderboard services
+[33m4fe2b6c[m HEAD@{21}: commit: removed duplicate user-profile endpoint
+[33m15499d8[m HEAD@{22}: commit: fixed endpoint in user profile service to match with backend
+[33mf66cd8a[m HEAD@{23}: commit: fix: align profile service endpoint with backend route
+[33ma9fc64b[m HEAD@{24}: commit: added link for Brush Script MT font
+[33m4f558bf[m HEAD@{25}: commit: renamed english_1k to english-1k (same with 5k and 10k.json files)
+[33m0e5423c[m HEAD@{26}: commit: Added wordsets (english 1k, 5k, 10k)
+[33mbd9c05f[m HEAD@{27}: commit: corrected the api endpoint, - last commit was wrong, i probably should overwrite that commit, but at the moment i am not going to do that right now
+[33m3da048e[m HEAD@{28}: commit: updated apiRequest endpoint link for login
+[33m16adfd5[m HEAD@{29}: commit: changed hardcoded file paths in testConfigService.js to comply with vite build
+[33mbb5f877[m HEAD@{30}: commit: added package-lock.json, package.json to frontend as part of vite hmr development module pack
+[33mc9e0252[m HEAD@{31}: commit: initialized frontend folder, added src/ and index.html to that folder
+[33m781bc5e[m HEAD@{32}: commit: changing CORS origin configurations to match frontend url
+[33mb3fd831[m HEAD@{33}: commit: changed api base url, removed certain files for security purposes
+[33meb76e8a[m HEAD@{34}: commit: Ignoring certain files for security
+[33ma29acfe[m HEAD@{35}: pull origin main --allow-unrelated-histories: Merge made by the 'ort' strategy.
+[33m1590950[m HEAD@{36}: commit (initial): Initial commit of full VisionType project

@@ -69,20 +69,22 @@ def register_user(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
             detail="A user with this username or email already exists."
         )
 
-    # 🔒 Secure password hashing using bcrypt via security.py
-    secure_hashed_password = hash_password(user_in.password)
+    # TODO: Hash password securely using passlib/bcrypt before saving!
+    # For now, we simulate a secure placeholder hash string:
+    hashed_password_placeholder = f"hashed_{user_in.password}"
 
     # Create new user model instance
     db_user = models.User(
         username=user_in.username,
         email=user_in.email,
-        hashed_password=secure_hashed_password  # Saved safely to database
+        hashed_password=hashed_password_placeholder
     )
     
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     
+    # Pydantic's UserResponse schema automatically serializes the database object to JSON
     return db_user
 
 # ==========================================
@@ -96,8 +98,7 @@ def login_user(form_data: schemas.UserLogin, db: Session = Depends(get_db)):
         (models.User.email == form_data.email) | (models.User.username == form_data.email)
     ).first()
 
-    # 🔒 Secure password verification against the stored bcrypt hash
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user or user.hashed_password != f"hashed_{form_data.password}":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -112,6 +113,7 @@ def login_user(form_data: schemas.UserLogin, db: Session = Depends(get_db)):
         "token_type": "bearer",
         "username": user.username
     }
+
 
 # ==========================================
 # 2. TYPING TEST SCORE TELEMETRY ENDPOINT
