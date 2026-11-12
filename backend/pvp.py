@@ -11,7 +11,7 @@ MAX_PLAYERS_PER_ROOM = 6
 #   "ROOM123": {
 #       "host": "Alice",
 #       "max_players": 6,
-#       "status": "waiting", 
+#       "status": "waiting", # "waiting" or "playing"
 #       "players": [ {"username": "Alice", "websocket": ws_obj}, ... ]
 #   } 
 # }
@@ -68,7 +68,7 @@ async def pvp_websocket_endpoint(
 
     print(f"Player {username} joined room {room_id}. Total: {len(room['players'])}/{room['max_players']}")
 
-    # Broadcast player joined event with max capacity = 6
+    # Broadcast player joined event with current host and max capacity info
     await broadcast_to_room(room_id, {
         "event": "player_joined",
         "username": username,
@@ -80,8 +80,16 @@ async def pvp_websocket_endpoint(
     try:
         while True:
             data = await websocket.receive_json()
+            event_type = data.get("event", "message")
+
+            # If host triggers the start of the game
+            if event_type == "start_game" and room["host"] == username:
+                room["status"] = "playing"
+                print(f"Room {room_id} match started by host {username}.")
+
+            # Broadcast incoming message/event to everyone in the room
             await broadcast_to_room(room_id, {
-                "event": data.get("event", "message"),
+                "event": event_type,
                 "username": username,
                 **data
             })
@@ -94,6 +102,7 @@ async def pvp_websocket_endpoint(
             del active_rooms[room_id]
             print(f"Room {room_id} is empty and has been destroyed.")
         else:
+            # Reassign host if the leaving player was the host
             if room["host"] == username:
                 room["host"] = room["players"][0]["username"]
 

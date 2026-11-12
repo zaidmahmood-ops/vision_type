@@ -909,9 +909,6 @@ body {
   gap: 2rem;
 }
 
-/* Import an expressive, modern font */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
-
 /* ==========================================
    VisionType - Leaderboard Styles
    ========================================== */
@@ -2068,4 +2065,15 @@ body {
 
 .compact-input-group input:focus {
   border-color: #fbbf24;
+}
+
+/* For pvp.js wordset scroll list */
+
+/* Make standard buttons and dropdown items react to hover */
+.config-btn:hover,
+.dropdown-item:hover,
+.pvp-card-compact button:hover {
+    background-color: rgba(251, 191, 36, 0.2) !important; /* Soft yellow highlight */
+    border-color: #fbbf24 !important;
+    cursor: pointer;
 }
