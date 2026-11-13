@@ -1,6 +1,7 @@
 // pvp.js
 import { connectPvpRoom, sendPvpMessage, disconnectPvpRoom } from '../services/pvpService.js';
 import { DATASET_REGISTRY } from '../services/testConfigService.js';
+import { createRaceController } from './pvpRaceController.js';
 
 let currentRoomId = null;
 let currentUsername = 'Player_' + Math.floor(Math.random() * 1000); // Or pull from user auth profile
@@ -11,6 +12,10 @@ let isDropdownOpen = false;
 // PvP Test Configuration State
 let testMode = 'words'; // 'time' or 'words'
 let testLimit = 35;     // 10, 35, 70, 100 or custom
+const ROUND_PRESETS = [1, 3, 5, 7];
+const MAX_CUSTOM_ROUNDS = 25;
+let testRounds = 3;
+let roundsCustomMode = false;
 
 // 1. COMPACT TEMPLATE FUNCTION WITH CONFIG VIEW, DATASET SELECTOR, AND TIME/WORDS LIMITS
 export function renderPvp() {
@@ -84,6 +89,10 @@ export function renderPvp() {
             <div id="suboptions-container" style="display: flex; gap: 4px; flex-wrap: wrap; flex: 1; justify-content: flex-end;"></div>
           </div>
 
+          <!-- ROUNDS -->
+          <div style="font-size: 0.75rem; color: #aaa; margin-top: 2px;">Rounds:</div>
+          <div id="rounds-container" style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;"></div>
+
           <div style="display: flex; gap: 6px; margin-top: 6px;">
             <button id="back-to-custom-btn" class="btn-secondary" style="flex: 1; padding: 6px; font-size: 0.8rem;">Back</button>
             <button id="confirm-create-btn" class="btn-primary" style="flex: 2; padding: 6px; font-size: 0.8rem; background-color: #22c55e;">Create & Launch 🚀</button>
@@ -115,9 +124,10 @@ export function renderPvp() {
       <!-- LIVE TYPING RACE VIEW -->
       <div id="pvp-race-view" style="display: none; margin-top: 10px;">
         <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px; text-align: center;">
-          <h3 style="color: #fbbf24; margin-bottom: 8px; font-size: 0.9rem;">Race in Progress! 🏁</h3>
-          <div id="pvp-typing-container" style="font-family: monospace; font-size: 0.9rem; text-align: left; background: #111; padding: 8px; border-radius: 4px; min-height: 60px;">
-            Race starting... Type your text here!
+          <h3 id="pvp-round-label" style="color: #fbbf24; margin-bottom: 8px; font-size: 0.9rem;">Get ready…</h3>
+          <div style="position: relative;">
+            <div id="pvp-typing-container"></div>
+            <div id="pvp-countdown" style="display: none; position: absolute; inset: 0; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; color: #fbbf24; background: rgba(0,0,0,0.55); border-radius: 4px;"></div>
           </div>
           <div id="pvp-scoreboard" style="margin-top: 10px;"></div>
         </div>
@@ -157,6 +167,87 @@ export function setupPvpEvents(container) {
   const waitingHostMsg = container.querySelector('#waiting-host-msg');
   const leaveRoomBtn = container.querySelector('#leave-room-btn');
   const findMatchBtn = container.querySelector('#find-match-btn');
+
+  const roundsContainer = container.querySelector('#rounds-container');
+
+  const race = createRaceController({
+    username: currentUsername,
+    els: {
+      typingContainer: container.querySelector('#pvp-typing-container'),
+      countdown: container.querySelector('#pvp-countdown'),
+      scoreboard: container.querySelector('#pvp-scoreboard'),
+      roundLabel: container.querySelector('#pvp-round-label'),
+    },
+    onMatchOver: () => {
+      if (raceView) raceView.style.display = 'none';
+      if (roomView) roomView.style.display = 'block'; // back to lobby; server reset it to "waiting"
+    },
+  });
+
+  renderRoundOptions();
+
+  function renderRoundOptions() {
+    if (!roundsContainer) return;
+    const isCustom = roundsCustomMode || !ROUND_PRESETS.includes(testRounds);
+    const style = 'padding: 4px 8px; font-size: 0.75rem;';
+    roundsContainer.innerHTML = '';
+
+    ROUND_PRESETS.forEach((n) => {
+      const btn = document.createElement('button');
+      btn.className = `config-option-btn ${!isCustom && testRounds === n ? 'btn-primary' : 'btn-secondary'}`;
+      btn.style.cssText = style;
+      btn.textContent = n;
+      btn.addEventListener('click', () => {
+        roundsCustomMode = false;
+        testRounds = n;
+        renderRoundOptions();
+      });
+      roundsContainer.appendChild(btn);
+    });
+
+    const customBtn = document.createElement('button');
+    customBtn.className = `config-option-btn ${isCustom ? 'btn-primary' : 'btn-secondary'}`;
+    customBtn.style.cssText = style;
+    customBtn.textContent = 'Custom';
+    customBtn.addEventListener('click', () => {
+      roundsCustomMode = true;
+      renderRoundOptions();
+      roundsContainer.querySelector('input')?.focus();
+    });
+    roundsContainer.appendChild(customBtn);
+
+    if (isCustom) {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '1';
+      input.max = String(MAX_CUSTOM_ROUNDS);
+      input.value = testRounds;
+      input.style.cssText = 'width: 56px; padding: 3px 6px; font-size: 0.75rem; background: transparent; border: 1px solid #444; color: #fff; border-radius: 4px;';
+      input.addEventListener('input', () => {
+        const v = parseInt(input.value, 10);
+        if (!Number.isNaN(v)) testRounds = Math.min(MAX_CUSTOM_ROUNDS, Math.max(1, v));
+      });
+      input.addEventListener('change', () => { input.value = testRounds; }); // normalise on blur
+      roundsContainer.appendChild(input);
+    }
+  }
+
+  function buildRoomConfig() {
+    return {
+      dataset_key: currentDatasetKey,
+      test_mode: testMode,
+      // PvP has no "infinite": fall back if the custom prompt returned 0
+      test_limit: testLimit > 0 ? testLimit : (testMode === 'words' ? 35 : 30),
+      rounds: testRounds,
+    };
+  }
+
+  function applyRoomConfig(cfg) {
+    const name = DATASET_REGISTRY[cfg.dataset_key]?.name || cfg.dataset_key;
+    if (displayConfig) {
+      displayConfig.textContent = `${name} (${cfg.test_mode}: ${cfg.test_limit} · ${cfg.rounds} round${cfg.rounds === 1 ? '' : 's'})`;
+    }
+  }
 
   // Render Sub-options dynamically whenever view is initialized
   renderSubOptions();
@@ -321,7 +412,7 @@ export function setupPvpEvents(container) {
     listContainer.appendChild(fragment);
   }
 
-  function enterRoom(roomId, action, configSummary = '') {
+  function enterRoom(roomId, action) {
     currentRoomId = roomId;
     connectPvpRoom(roomId, currentUsername, action, {
       onOpen: () => {
@@ -331,37 +422,38 @@ export function setupPvpEvents(container) {
         closeDropdown();
         if (roomView) roomView.style.display = 'block';
         if (displayRoomCode) displayRoomCode.textContent = roomId;
-        if (configSummary && displayConfig) displayConfig.textContent = configSummary;
+
+        // Send config as soon as the socket opens (replaces the 500ms setTimeout hack)
+        if (action === 'create') sendPvpMessage('update_config', buildRoomConfig());
       },
       onMessage: (data) => {
         if (data.host) {
           roomHost = data.host;
-          if (roomHost === currentUsername) {
-            if (startMatchBtn) startMatchBtn.style.display = 'block';
-            if (waitingHostMsg) waitingHostMsg.style.display = 'none';
-          } else {
-            if (startMatchBtn) startMatchBtn.style.display = 'none';
-            if (waitingHostMsg) waitingHostMsg.style.display = 'block';
-          }
+          const isHost = roomHost === currentUsername;
+          if (startMatchBtn) startMatchBtn.style.display = isHost ? 'block' : 'none';
+          if (waitingHostMsg) waitingHostMsg.style.display = isHost ? 'none' : 'block';
         }
 
-        if (data.total_players !== undefined && data.max_players !== undefined) {
-          if (playerCountDisplay) {
-            playerCountDisplay.textContent = `${data.total_players}/${data.max_players}`;
-          }
+        if (data.total_players !== undefined && data.max_players !== undefined && playerCountDisplay) {
+          playerCountDisplay.textContent = `${data.total_players}/${data.max_players}`;
         }
+
+        if (data.config) applyRoomConfig(data.config); // joiners get config from the server
 
         if (data.event === 'start_game') {
           if (roomView) roomView.style.display = 'none';
           if (raceView) raceView.style.display = 'block';
         }
+
+        race.handle(data); // ready handshake, countdown, engine, bars
       },
       onError: () => leaveRoomStateOnly(),
-      onClose: () => leaveRoomStateOnly()
+      onClose: () => leaveRoomStateOnly(),
     });
   }
 
   function leaveRoomStateOnly() {
+    race.destroy();
     currentRoomId = null;
     if (roomView) roomView.style.display = 'none';
     if (raceView) raceView.style.display = 'none';
@@ -376,19 +468,7 @@ export function setupPvpEvents(container) {
   if (confirmCreateBtn) {
     confirmCreateBtn.addEventListener('click', () => {
       const randomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const datasetName = DATASET_REGISTRY[currentDatasetKey]?.name || currentDatasetKey;
-      const configSummary = `${datasetName} (${testMode}: ${testLimit})`;
-      
-      enterRoom(randomCode, 'create', configSummary);
-      
-      setTimeout(() => {
-        sendPvpMessage({ 
-          event: 'update_config', 
-          dataset_key: currentDatasetKey,
-          test_mode: testMode,
-          test_limit: testLimit
-        });
-      }, 500);
+      enterRoom(randomCode, 'create');
     });
   }
 
@@ -404,9 +484,7 @@ export function setupPvpEvents(container) {
   }
 
   if (startMatchBtn) {
-    startMatchBtn.addEventListener('click', () => {
-      sendPvpMessage({ event: 'start_game' });
-    });
+    startMatchBtn.addEventListener('click', () => sendPvpMessage('start_game'));
   }
 
   if (findMatchBtn) {
