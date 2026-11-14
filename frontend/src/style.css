@@ -576,6 +576,7 @@ body {
   display: flex;
 }
 
+
 .letter.correct { color: white; }
 .letter.incorrect { color: #e74c3c; }
 
@@ -2076,4 +2077,436 @@ body {
     background-color: rgba(251, 191, 36, 0.2) !important; /* Soft yellow highlight */
     border-color: #fbbf24 !important;
     cursor: pointer;
+}
+
+/* ==========================================
+   PvP Mode Clean Architecture & Layout Styles
+   ========================================== */
+
+.pvp-card-compact {
+  background: rgba(3, 3, 49, 0.92);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  padding: 32px 40px;
+  max-width: 1100px;
+  width: 92%;
+  margin: 3rem auto;
+  box-sizing: border-box;
+  color: #f1f5f9;
+  font-family: 'JetBrains Mono', monospace;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.pvp-card-compact h2 {
+  font-size: 2rem;
+  color: #fbbf24;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pvp-card-compact p {
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.pvp-mode-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.pvp-section {
+  margin-top: 0;
+}
+
+.pvp-config-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pvp-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background: rgba(3, 3, 49, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-radius: 6px;
+  outline: none;
+}
+
+.pvp-input:focus {
+  border-color: #fbbf24;
+}
+
+.pvp-btn-sm {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
+.pvp-divider-text {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #888;
+  margin: 2px 0;
+}
+
+.pvp-btn-full {
+  width: 100%;
+  padding: 9px;
+  font-size: 0.85rem;
+}
+
+.pvp-config-heading {
+  font-size: 0.9rem;
+  color: #fbbf24;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.pvp-label {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.pvp-relative {
+  position: relative;
+}
+
+.pvp-dataset-picker {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.pvp-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  z-index: 10;
+  margin-top: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.pvp-dropdown-search-wrap {
+  padding: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.pvp-search-input {
+  width: 100%;
+  padding: 6px 8px;
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  outline: none;
+}
+
+.pvp-flex-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pvp-mode-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.pvp-config-pill {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.pvp-suboptions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.pvp-rounds-flex {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pvp-action-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pvp-btn-flex1 {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.85rem;
+}
+
+.pvp-btn-success {
+  flex: 2;
+  padding: 8px;
+  font-size: 0.85rem;
+  background-color: #22c55e;
+  font-weight: 700;
+}
+
+.pvp-room-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pvp-room-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pvp-room-code-label {
+  font-size: 0.85rem;
+  color: #3bce16;
+}
+
+.pvp-highlight {
+  color: #fbbf24;
+}
+
+.pvp-player-count-label {
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.pvp-config-badge {
+  font-size: 0.8rem;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.15);
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.pvp-white-text {
+  color: #fff;
+}
+
+.pvp-start-match-btn {
+  display: none;
+  width: 100%;
+  padding: 8px;
+  font-size: 0.85rem;
+  background-color: #22c55e;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pvp-text-muted-center {
+  font-size: 0.8rem;
+  color: #aaa;
+  text-align: center;
+}
+
+.pvp-leave-btn {
+  padding: 6px;
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.pvp-race-wrapper {
+  display: none;
+  margin-top: 14px;
+}
+
+.pvp-race-card-inner {
+  background: rgba(3, 3, 49);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.pvp-round-title {
+  color: #fbbf24;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.pvp-countdown-box {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  z-index: 20;
+}
+
+.pvp-scoreboard-box {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* Typing Engine Viewport Styles */
+.pvp-live-hud {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  color: #e2b714;
+  font-weight: 600;
+  padding-left: 5px;
+}
+
+.pvp-typing-viewport {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;    
+  color: rgba(233, 225, 219, 0.527);
+  width: 100%;
+  max-width: 1400px;
+  height: 9.5rem;
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 15px;
+  background-color: rgb(3, 3, 49);
+  border-radius: 8px;
+  font-family: monospace; 
+  font-size: 1.8rem;
+  line-height: 2rem;
+  text-align: left;  
+  column-gap: 20px;
+  row-gap: 10px; 
+  user-select: none;
+  position: relative; /* For cursor positioning */
+  box-sizing: border-box;
+}
+
+.pvp-words-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.8rem;
+  line-height: 2.5rem;
+  font-size: 1.8rem;
+  transition: transform 0.15s ease-out;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.pvp-cursor {
+  position: absolute;
+  width: 2px;
+  height: 2.2rem;
+  background-color: #e2b714;
+  border-radius: 1px;
+  transition: left 0.08s ease-out, top 0.08s ease-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.pvp-locked .pvp-words-wrapper {
+  opacity: 0.4;
+  filter: blur(2px);
+}
+
+/* Racing state: removes border, shadow, and hides header text */
+.pvp-card-compact.racing {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.pvp-card-compact.racing > h2,
+.pvp-card-compact.racing > p {
+  display: none !important;
+}
+
+/* Single-row compact scoreboard layout */
+.pvp-score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.pvp-score-name {
+  width: 130px;
+  font-size: 0.8rem;
+  color: #ccc;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pvp-score-track {
+  flex: 1;
+  height: 8px;
+  background: rgb(3, 3, 49); /* Matches your exact background color */
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pvp-score-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: width 150ms linear;
+}
+
+.pvp-score-fill.self {
+  background: #22c55e;
+}
+
+.pvp-score-fill.opponent {
+  background: #3b82f6;
+}
+
+.pvp-score-wpm {
+  width: 75px;
+  text-align: right;
+  font-size: 0.8rem;
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.pvp-cursor.blink {
+  animation: blink 1s infinite;
 }

@@ -2,7 +2,7 @@
 import * as typingTestView from './views/typingTest.js';
 import { renderLogin, renderRegister, setupLoginEvents, setupRegisterEvents } from './views/login.js';
 import { renderLeaderboard, setupLeaderboardEvents } from './views/leaderboard.js';
-import { renderPvp, setupPvpEvents } from './views/pvp.js';
+import { renderPvp, setupPvpEvents, cleanupPvp } from './views/pvp.js';
 import { renderSettings } from './views/settings.js';
 import { renderInfo } from './views/info.js';
 import { renderProfile, setupProfileEvents} from './views/user-profile.js';
@@ -15,6 +15,11 @@ export function navigateTo(route) {
 
   if (currentRoute === 'typing' && route !== 'typing') {
     typingTestView.cleanupTypingGame();
+  }
+
+  // Leaving PvP: stop the race engine and close the socket (no stray UI callbacks)
+  if (currentRoute === 'pvp' && route !== 'pvp') {
+    cleanupPvp();
   }
 
   currentRoute = route;

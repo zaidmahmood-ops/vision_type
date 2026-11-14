@@ -4,140 +4,122 @@ import { DATASET_REGISTRY } from '../services/testConfigService.js';
 import { createRaceController } from './pvpRaceController.js';
 
 let currentRoomId = null;
-let currentUsername = 'Player_' + Math.floor(Math.random() * 1000); // Or pull from user auth profile
+let currentUsername = 'Player_' + Math.floor(Math.random() * 1000);
 let roomHost = null;
-let currentDatasetKey = 'english-200'; // Default dataset key
+let currentDatasetKey = 'english-200';
 let isDropdownOpen = false;
 
-// PvP Test Configuration State
-let testMode = 'words'; // 'time' or 'words'
-let testLimit = 35;     // 10, 35, 70, 100 or custom
+let testMode = 'words';
+let testLimit = 35;
 const ROUND_PRESETS = [1, 3, 5, 7];
 const MAX_CUSTOM_ROUNDS = 25;
 let testRounds = 3;
 let roundsCustomMode = false;
 
-// 1. COMPACT TEMPLATE FUNCTION WITH CONFIG VIEW, DATASET SELECTOR, AND TIME/WORDS LIMITS
+// Handle to the live race controller so navigation can tear it down
+let activeRace = null;
+
+/**
+ * Call when leaving the PvP route (see navigation.js). Stops the engine's
+ * keydown listener, timers and the WebSocket without triggering UI callbacks.
+ */
+export function cleanupPvp() {
+  activeRace?.destroy();
+  activeRace = null;
+  currentRoomId = null;
+  disconnectPvpRoom();
+}
+
 export function renderPvp() {
   const currentDatasetName = DATASET_REGISTRY[currentDatasetKey]?.name || currentDatasetKey;
-  const standardOptions = testMode === 'time' ? [10, 20, 60, 100] : [10, 35, 70, 100];
-  const isCustom = !standardOptions.includes(testLimit);
 
   return `
-    <div class="pvp-card-compact">
+    <div class="pvp-card-compact" id="pvp-main-wrapper">
       <h2>PvP Mode ⚔</h2>
-      <p>Multiplayer live typing battle (Max 6)</p>
+      <p>Multiplayer live typing battle (Max 4)</p>
       
       <!-- MODE SELECTION TABS -->
-      <div class="pvp-mode-tabs" style="display: flex; gap: 8px; margin-bottom: 14px;">
-        <button id="tab-quick-match" class="btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">Quick Match</button>
-        <button id="tab-custom-rooms" class="btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">Custom Room</button>
+      <div class="pvp-mode-tabs">
+        <button id="tab-quick-match" class="btn-primary pvp-btn-sm">Quick Match</button>
+        <button id="tab-custom-rooms" class="btn-secondary pvp-btn-sm">Custom Room</button>
       </div>
 
       <!-- QUICK MATCH VIEW -->
-      <div id="view-quick-match" class="pvp-section" style="margin-top: 0;">
-        <button id="find-match-btn" class="btn-primary" style="width: 100%; padding: 8px;">Find Public Match</button>
+      <div id="view-quick-match" class="pvp-section">
+        <button id="find-match-btn" class="btn-primary pvp-btn-full">Find Public Match</button>
       </div>
 
-      <!-- CUSTOM ROOMS VIEW (Main Custom Menu) -->
-      <div id="view-custom-rooms" class="pvp-section" style="display: none; margin-top: 0;">
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          
-          <!-- Join with code input bar -->
-          <div class="compact-input-group" style="display: flex; gap: 6px;">
-            <input type="text" id="room-code-input" placeholder="ENTER ROOM CODE" style="flex: 1; padding: 6px 8px; font-size: 0.85rem; background: transparent; border: 1px solid #333; color: #fff; border-radius: 4px;" />
-            <button id="submit-join-btn" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Join Room</button>
+      <!-- CUSTOM ROOMS VIEW -->
+      <div id="view-custom-rooms" class="pvp-section" style="display: none;">
+        <div class="pvp-config-box">
+          <div class="compact-input-group">
+            <input type="text" id="room-code-input" class="pvp-input" placeholder="ENTER ROOM CODE" />
+            <button id="submit-join-btn" class="btn-secondary pvp-btn-sm">Join Room</button>
           </div>
-
-          <!-- Divider text -->
-          <div style="text-align: center; font-size: 0.75rem; color: #888; margin: 2px 0;">- OR -</div>
-
-          <!-- Triggers DOM manipulation to show config view -->
-          <button id="show-create-config-btn" class="btn-primary" style="width: 100%; padding: 7px; font-size: 0.8rem;">Create New Room</button>
-          
+          <div class="pvp-divider-text">- OR -</div>
+          <button id="show-create-config-btn" class="btn-primary pvp-btn-full">Create New Room</button>
         </div>
       </div>
 
-      <!-- CREATE ROOM CONFIGURATION VIEW (DOM view inside same rectangle) -->
-      <div id="view-create-config" class="pvp-section" style="display: none; margin-top: 0;">
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div style="font-size: 0.85rem; color: #fbbf24; font-weight: bold; margin-bottom: 2px;">Configure Room Settings</div>
+      <!-- CREATE ROOM CONFIGURATION VIEW -->
+      <div id="view-create-config" class="pvp-section" style="display: none;">
+        <div class="pvp-config-box">
+          <div class="pvp-config-heading">Configure Room Settings</div>
           
-          <!-- WORDSET / DATASET PICKER -->
-          <div style="font-size: 0.75rem; color: #aaa;">Wordlist:</div>
-          <div class="config-group dataset-group" style="position: relative;">
-            <button id="dataset-picker-btn" class="config-btn" style="width: 100%; text-align: left; padding: 6px 8px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+          <div class="pvp-label">Wordlist:</div>
+          <div class="config-group dataset-group pvp-relative">
+            <button id="dataset-picker-btn" class="config-btn pvp-dataset-picker">
               🌐 <span id="current-dataset-label">${currentDatasetName}</span>
             </button>
-            <div id="dataset-dropdown" class="config-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1a1a1a; border: 1px solid #444; border-radius: 4px; z-index: 10; margin-top: 4px; max-height: 150px; overflow-y: auto;">
-              <div class="dropdown-search" style="padding: 6px; border-bottom: 1px solid #333;">
-                <input type="text" id="modal-search-input" placeholder="search wordlist..." autocomplete="off" style="width: 100%; padding: 4px; background: #111; border: 1px solid #333; color: #fff; font-size: 0.75rem; border-radius: 3px;" />
+            <div id="dataset-dropdown" class="config-dropdown pvp-dropdown-menu">
+              <div class="dropdown-search pvp-dropdown-search-wrap">
+                <input type="text" id="modal-search-input" class="pvp-search-input" placeholder="search wordlist..." autocomplete="off" />
               </div>
               <div class="dropdown-list" id="modal-dataset-list"></div>
             </div>
           </div>
 
-          <!-- TEST MODE (time / words) -->
-          <div style="font-size: 0.75rem; color: #aaa; margin-top: 2px;">Test Mode & Limit:</div>
-          <div style="display: flex; gap: 6px; align-items: center;">
-            <div class="config-group mode-group" style="display: flex; gap: 4px;">
-              <button class="config-option-btn mode-btn ${testMode === 'time' ? 'btn-primary' : 'btn-secondary'}" data-mode="time" style="padding: 4px 8px; font-size: 0.75rem;">time</button>
-              <button class="config-option-btn mode-btn ${testMode === 'words' ? 'btn-primary' : 'btn-secondary'}" data-mode="words" style="padding: 4px 8px; font-size: 0.75rem;">words</button>
+          <div class="pvp-label">Test Mode & Limit:</div>
+          <div class="pvp-flex-row">
+            <div class="config-group mode-group pvp-mode-buttons">
+              <button class="config-option-btn mode-btn ${testMode === 'time' ? 'btn-primary' : 'btn-secondary'} pvp-config-pill" data-mode="time">time</button>
+              <button class="config-option-btn mode-btn ${testMode === 'words' ? 'btn-primary' : 'btn-secondary'} pvp-config-pill" data-mode="words">words</button>
             </div>
-            
-            <!-- SUB-OPTIONS CONTAINER -->
-            <div id="suboptions-container" style="display: flex; gap: 4px; flex-wrap: wrap; flex: 1; justify-content: flex-end;"></div>
+            <div id="suboptions-container" class="pvp-suboptions"></div>
           </div>
 
-          <!-- ROUNDS -->
-          <div style="font-size: 0.75rem; color: #aaa; margin-top: 2px;">Rounds:</div>
-          <div id="rounds-container" style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;"></div>
+          <div class="pvp-label">Rounds:</div>
+          <div id="rounds-container" class="pvp-rounds-flex"></div>
 
-          <div style="display: flex; gap: 6px; margin-top: 6px;">
-            <button id="back-to-custom-btn" class="btn-secondary" style="flex: 1; padding: 6px; font-size: 0.8rem;">Back</button>
-            <button id="confirm-create-btn" class="btn-primary" style="flex: 2; padding: 6px; font-size: 0.8rem; background-color: #22c55e;">Create & Launch 🚀</button>
+          <div class="pvp-action-row">
+            <button id="back-to-custom-btn" class="btn-secondary pvp-btn-flex1">Back</button>
+            <button id="confirm-create-btn" class="btn-primary pvp-btn-success">Create & Launch 🚀</button>
           </div>
         </div>
       </div>
 
       <!-- WAITING / ACTIVE LOBBY VIEW -->
       <div id="pvp-room-view" style="display: none;">
-        <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.3); padding: 10px 12px; border-radius: 6px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 0.80rem; color: #3bce16;">Room: <strong id="display-room-code" style="color:#fbbf24">----</strong></span>
-            <span style="font-size: 0.80rem; color: #ccc;">Players: <strong id="player-count" style="color: #fbbf24;">1/6</strong></span>
+        <div class="pvp-room-box">
+          <div class="pvp-room-row">
+            <span class="pvp-room-code-label">Room: <strong id="display-room-code" class="pvp-highlight">----</strong></span>
+            <span class="pvp-player-count-label">Players: <strong id="player-count" class="pvp-highlight">1/4</strong></span>
           </div>
 
-          <!-- Room settings badge -->
-          <div style="font-size: 0.75rem; color: #93c5fd; background: rgba(59,130,246,0.1); padding: 4px 8px; border-radius: 4px; text-align: center;">
-            Config: <strong id="display-config" style="color: #fff;">${currentDatasetName} (${testMode}: ${testLimit})</strong>
+          <div class="pvp-config-badge">
+            Config: <strong id="display-config" class="pvp-white-text">${currentDatasetName} (${testMode}: ${testLimit})</strong>
           </div>
 
-          <!-- HOST START BUTTON -->
-          <button id="start-match-btn" class="btn-primary" style="display: none; width: 100%; padding: 6px; font-size: 0.8rem; background-color: #22c55e;">Start Match 🚀</button>
-          <div id="waiting-host-msg" style="font-size: 0.75rem; color: #aaa; text-align: center;">Waiting for host to start...</div>
+          <button id="start-match-btn" class="btn-primary pvp-start-match-btn">Start Match 🚀</button>
+          <div id="waiting-host-msg" class="pvp-text-muted-center">Waiting for host to start...</div>
 
-          <button id="leave-room-btn" class="btn-danger" style="padding: 5px; font-size: 0.75rem; width: 100%;">Leave Room</button>
+          <button id="leave-room-btn" class="btn-danger pvp-leave-btn">Leave Room</button>
         </div>
       </div>
-
-      <!-- LIVE TYPING RACE VIEW -->
-      <div id="pvp-race-view" style="display: none; margin-top: 10px;">
-        <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px; text-align: center;">
-          <h3 id="pvp-round-label" style="color: #fbbf24; margin-bottom: 8px; font-size: 0.9rem;">Get ready…</h3>
-          <div style="position: relative;">
-            <div id="pvp-typing-container"></div>
-            <div id="pvp-countdown" style="display: none; position: absolute; inset: 0; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; color: #fbbf24; background: rgba(0,0,0,0.55); border-radius: 4px;"></div>
-          </div>
-          <div id="pvp-scoreboard" style="margin-top: 10px;"></div>
-        </div>
-      </div>
-
     </div>
   `;
 }
 
-// 2. EVENT BINDER
 export function setupPvpEvents(container) {
   const tabQuickMatch = container.querySelector('#tab-quick-match');
   const tabCustomRooms = container.querySelector('#tab-custom-rooms');
@@ -159,7 +141,6 @@ export function setupPvpEvents(container) {
   const submitJoinBtn = container.querySelector('#submit-join-btn');
   const roomCodeInput = container.querySelector('#room-code-input');
   const roomView = container.querySelector('#pvp-room-view');
-  const raceView = container.querySelector('#pvp-race-view');
   const displayRoomCode = container.querySelector('#display-room-code');
   const displayConfig = container.querySelector('#display-config');
   const playerCountDisplay = container.querySelector('#player-count');
@@ -170,32 +151,33 @@ export function setupPvpEvents(container) {
 
   const roundsContainer = container.querySelector('#rounds-container');
 
-  const race = createRaceController({
-    username: currentUsername,
-    els: {
-      typingContainer: container.querySelector('#pvp-typing-container'),
-      countdown: container.querySelector('#pvp-countdown'),
-      scoreboard: container.querySelector('#pvp-scoreboard'),
-      roundLabel: container.querySelector('#pvp-round-label'),
-    },
-    onMatchOver: () => {
-      if (raceView) raceView.style.display = 'none';
-      if (roomView) roomView.style.display = 'block'; // back to lobby; server reset it to "waiting"
-    },
-  });
+  let race = null;
+
+  function initRaceController() {
+    return createRaceController({
+      username: currentUsername,
+      els: {
+        typingContainer: container.querySelector('#pvp-typing-viewport'),
+        countdown: container.querySelector('#pvp-countdown'),
+        scoreboard: container.querySelector('#pvp-scoreboard'),
+        roundLabel: container.querySelector('#pvp-round-label'),
+      },
+      onMatchOver: () => {
+        restoreLobbyView();
+      },
+    });
+  }
 
   renderRoundOptions();
 
   function renderRoundOptions() {
     if (!roundsContainer) return;
     const isCustom = roundsCustomMode || !ROUND_PRESETS.includes(testRounds);
-    const style = 'padding: 4px 8px; font-size: 0.75rem;';
     roundsContainer.innerHTML = '';
 
     ROUND_PRESETS.forEach((n) => {
       const btn = document.createElement('button');
-      btn.className = `config-option-btn ${!isCustom && testRounds === n ? 'btn-primary' : 'btn-secondary'}`;
-      btn.style.cssText = style;
+      btn.className = `config-option-btn ${!isCustom && testRounds === n ? 'btn-primary' : 'btn-secondary'} pvp-config-pill`;
       btn.textContent = n;
       btn.addEventListener('click', () => {
         roundsCustomMode = false;
@@ -206,8 +188,7 @@ export function setupPvpEvents(container) {
     });
 
     const customBtn = document.createElement('button');
-    customBtn.className = `config-option-btn ${isCustom ? 'btn-primary' : 'btn-secondary'}`;
-    customBtn.style.cssText = style;
+    customBtn.className = `config-option-btn ${isCustom ? 'btn-primary' : 'btn-secondary'} pvp-config-pill`;
     customBtn.textContent = 'Custom';
     customBtn.addEventListener('click', () => {
       roundsCustomMode = true;
@@ -222,12 +203,15 @@ export function setupPvpEvents(container) {
       input.min = '1';
       input.max = String(MAX_CUSTOM_ROUNDS);
       input.value = testRounds;
-      input.style.cssText = 'width: 56px; padding: 3px 6px; font-size: 0.75rem; background: transparent; border: 1px solid #444; color: #fff; border-radius: 4px;';
+      input.className = 'pvp-input';
+      input.style.width = '56px';
+      input.style.padding = '3px 6px';
+      input.style.fontSize = '0.75rem';
       input.addEventListener('input', () => {
         const v = parseInt(input.value, 10);
         if (!Number.isNaN(v)) testRounds = Math.min(MAX_CUSTOM_ROUNDS, Math.max(1, v));
       });
-      input.addEventListener('change', () => { input.value = testRounds; }); // normalise on blur
+      input.addEventListener('change', () => { input.value = testRounds; });
       roundsContainer.appendChild(input);
     }
   }
@@ -236,7 +220,6 @@ export function setupPvpEvents(container) {
     return {
       dataset_key: currentDatasetKey,
       test_mode: testMode,
-      // PvP has no "infinite": fall back if the custom prompt returned 0
       test_limit: testLimit > 0 ? testLimit : (testMode === 'words' ? 35 : 30),
       rounds: testRounds,
     };
@@ -249,7 +232,6 @@ export function setupPvpEvents(container) {
     }
   }
 
-  // Render Sub-options dynamically whenever view is initialized
   renderSubOptions();
 
   function renderSubOptions() {
@@ -262,8 +244,7 @@ export function setupPvpEvents(container) {
 
     standardOptions.forEach(val => {
       const btn = document.createElement('button');
-      btn.className = `config-option-btn ${testLimit === val ? 'btn-primary' : 'btn-secondary'}`;
-      btn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem;';
+      btn.className = `config-option-btn ${testLimit === val ? 'btn-primary' : 'btn-secondary'} pvp-config-pill`;
       btn.innerText = val;
       btn.addEventListener('click', () => {
         testLimit = val;
@@ -273,8 +254,7 @@ export function setupPvpEvents(container) {
     });
 
     const customBtn = document.createElement('button');
-    customBtn.className = `config-option-btn ${isCustom ? 'btn-primary' : 'btn-secondary'}`;
-    customBtn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem;';
+    customBtn.className = `config-option-btn ${isCustom ? 'btn-primary' : 'btn-secondary'} pvp-config-pill`;
     customBtn.innerHTML = `🛠️ ${isCustom ? (testLimit === 0 ? '∞' : testLimit) : ''}`;
     customBtn.title = "Set custom limit (0 = infinite)";
 
@@ -292,7 +272,6 @@ export function setupPvpEvents(container) {
     suboptionsContainer.appendChild(fragment);
   }
 
-  // Mode button listener (time vs words)
   modeGroup?.addEventListener('click', (e) => {
     const btn = e.target.closest('.config-option-btn');
     if (!btn) return;
@@ -302,37 +281,32 @@ export function setupPvpEvents(container) {
     testMode = newMode;
     testLimit = testMode === 'words' ? 35 : 30;
 
-    // Update active mode button styling
     modeGroup.querySelectorAll('.config-option-btn').forEach(b => {
-      b.className = 'config-option-btn mode-btn btn-secondary';
-      b.style.cssText = 'padding: 4px 8px; font-size: 0.75rem;';
+      b.className = 'config-option-btn mode-btn btn-secondary pvp-config-pill';
     });
-    btn.className = 'config-option-btn mode-btn btn-primary';
-    btn.style.cssText = 'padding: 4px 8px; font-size: 0.75rem;';
+    btn.className = 'config-option-btn mode-btn btn-primary pvp-config-pill';
 
     renderSubOptions();
   });
 
-  // Tab Switching
   if (tabQuickMatch && tabCustomRooms) {
     tabQuickMatch.addEventListener('click', () => {
       viewQuickMatch.style.display = 'block';
       viewCustomRooms.style.display = 'none';
       viewCreateConfig.style.display = 'none';
       closeDropdown();
-      tabQuickMatch.className = 'btn-primary';
-      tabCustomRooms.className = 'btn-secondary';
+      tabQuickMatch.className = 'btn-primary pvp-btn-sm';
+      tabCustomRooms.className = 'btn-secondary pvp-btn-sm';
     });
     tabCustomRooms.addEventListener('click', () => {
       viewCustomRooms.style.display = 'block';
       viewQuickMatch.style.display = 'none';
       viewCreateConfig.style.display = 'none';
-      tabCustomRooms.className = 'btn-primary';
-      tabQuickMatch.className = 'btn-secondary';
+      tabCustomRooms.className = 'btn-primary pvp-btn-sm';
+      tabQuickMatch.className = 'btn-secondary pvp-btn-sm';
     });
   }
 
-  // DOM Navigation for Create Room Config Flow
   if (showCreateConfigBtn) {
     showCreateConfigBtn.addEventListener('click', () => {
       viewCustomRooms.style.display = 'none';
@@ -348,7 +322,6 @@ export function setupPvpEvents(container) {
     });
   }
 
-  // Dataset Dropdown Handlers
   datasetBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     isDropdownOpen = !isDropdownOpen;
@@ -416,14 +389,16 @@ export function setupPvpEvents(container) {
     currentRoomId = roomId;
     connectPvpRoom(roomId, currentUsername, action, {
       onOpen: () => {
+        const modeTabs = container.querySelector('.pvp-mode-tabs');
+        if (modeTabs) modeTabs.style.display = 'none';
         viewQuickMatch.style.display = 'none';
         viewCustomRooms.style.display = 'none';
         viewCreateConfig.style.display = 'none';
+        
         closeDropdown();
         if (roomView) roomView.style.display = 'block';
         if (displayRoomCode) displayRoomCode.textContent = roomId;
 
-        // Send config as soon as the socket opens (replaces the 500ms setTimeout hack)
         if (action === 'create') sendPvpMessage('update_config', buildRoomConfig());
       },
       onMessage: (data) => {
@@ -438,31 +413,53 @@ export function setupPvpEvents(container) {
           playerCountDisplay.textContent = `${data.total_players}/${data.max_players}`;
         }
 
-        if (data.config) applyRoomConfig(data.config); // joiners get config from the server
+        if (data.config) applyRoomConfig(data.config);
 
         if (data.event === 'start_game') {
-          if (roomView) roomView.style.display = 'none';
-          if (raceView) raceView.style.display = 'block';
+          const mainWrapper = container.querySelector('#pvp-main-wrapper');
+          if (mainWrapper) {
+            mainWrapper.outerHTML = `
+              <div style="width: 100%; max-width: 1100px; margin: 2rem auto 1rem; padding: 0 15px; box-sizing: border-box;" id="pvp-active-race-root">
+                <div id="pvp-round-label" style="color: #fbbf24; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; text-align: center; font-family: 'JetBrains Mono', monospace;">Get ready…</div>
+                <div id="pvp-scoreboard" style="width: 100%; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 10px;"></div>
+              </div>
+              <div class="pvp-live-hud" style="width: 100%; max-width: 1100px; margin: 0 auto 8px auto; box-sizing: border-box; padding: 0 15px;">
+                <span class="pvp-hud-counter">0 / ${testLimit}</span>
+              </div>
+              <div style="position: relative; width: calc(100% - 30px); max-width: 1100px; margin: 0 auto;">
+                <div class="pvp-typing-viewport" id="pvp-typing-viewport">
+                  <div id="pvp-words-wrapper" class="pvp-words-wrapper">
+                    <div class="pvp-cursor blink"></div>
+                  </div>
+                </div>
+                <div id="pvp-countdown" class="pvp-countdown-box"></div>
+              </div>
+            `;
+          }
+
+          race = initRaceController();
+          activeRace = race;
         }
 
-        race.handle(data); // ready handshake, countdown, engine, bars
+        race?.handle(data);
       },
       onError: () => leaveRoomStateOnly(),
       onClose: () => leaveRoomStateOnly(),
     });
   }
 
-  function leaveRoomStateOnly() {
-    race.destroy();
+  function restoreLobbyView() {
+    race?.destroy();
+    race = null;
+    activeRace = null;
     currentRoomId = null;
-    if (roomView) roomView.style.display = 'none';
-    if (raceView) raceView.style.display = 'none';
-    if (viewCreateConfig) viewCreateConfig.style.display = 'none';
-    if (viewCustomRooms) viewCustomRooms.style.display = 'block';
-    if (roomCodeInput) roomCodeInput.value = '';
-    if (playerCountDisplay) playerCountDisplay.textContent = '1/6';
-    if (startMatchBtn) startMatchBtn.style.display = 'none';
-    closeDropdown();
+    
+    container.innerHTML = renderPvp();
+    setupPvpEvents(container);
+  }
+
+  function leaveRoomStateOnly() {
+    restoreLobbyView();
   }
 
   if (confirmCreateBtn) {

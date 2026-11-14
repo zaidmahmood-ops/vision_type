@@ -8,24 +8,19 @@ import { throttle } from '../utils/throttle.js';
 const PROGRESS_INTERVAL_MS = 150;
 const INTERMISSION_MS = 4000;
 
-/**
- * els: { typingContainer, countdown, scoreboard, roundLabel }
- */
 export function createRaceController({ username, els, onMatchOver }) {
   let engine = null;
   let config = null;
   let wordPool = [];
   let countdownTimer = null;
   let intermissionTimer = null;
-  const bars = new Map(); // username -> { fill, wpm }
+  const bars = new Map();
 
-  // Item 5: throttled progress sender
   const sendProgress = throttle(
     (p) => sendPvpMessage('progress', { progress: p.progress, wpm: p.wpm }),
     PROGRESS_INTERVAL_MS
   );
 
-  // ---------- Event router: call this with every server message ----------
   function handle(data) {
     switch (data.event) {
       case 'start_game':      return onStartGame(data);
@@ -37,7 +32,6 @@ export function createRaceController({ username, els, onMatchOver }) {
     }
   }
 
-  // ---------- Item 2: load assets, then report ready ----------
   async function onStartGame(data) {
     config = data.config;
     renderBars(data.players);
@@ -52,7 +46,6 @@ export function createRaceController({ username, els, onMatchOver }) {
     sendPvpMessage('player_ready');
   }
 
-  // ---------- Item 3: countdown + input lock ----------
   function onStartCountdown({ seconds, seed, round, total_rounds }) {
     destroyEngine();
     resetBars();
@@ -62,14 +55,13 @@ export function createRaceController({ username, els, onMatchOver }) {
       config.test_mode === 'words' ? config.test_limit : Math.max(150, config.test_limit * 6);
     const words = generateWords(wordPool, wordCount, seed);
 
-    // Engine is created LOCKED: keydown is ignored until unlock()
     engine = createTypingEngine({
       container: els.typingContainer,
       words,
       mode: config.test_mode,
       limit: config.test_limit,
       onProgress: (snap) => {
-        updateBar(username, snap.progress, snap.wpm); // own bar updates instantly
+        updateBar(username, snap.progress, snap.wpm);
         if (snap.finished) {
           sendProgress.cancel();
           sendPvpMessage('progress', { progress: 1, wpm: snap.wpm });
@@ -107,7 +99,6 @@ export function createRaceController({ username, els, onMatchOver }) {
     }, 1000);
   }
 
-  // ---------- Round / match end ----------
   function onRoundEnd(data) {
     sendProgress.cancel();
     engine?.lock();
@@ -123,34 +114,33 @@ export function createRaceController({ username, els, onMatchOver }) {
       destroy();
       onMatchOver?.(data);
     } else {
-      // Next round: same ready handshake (wordlist is already cached)
       intermissionTimer = setTimeout(() => sendPvpMessage('player_ready'), INTERMISSION_MS);
     }
   }
 
-  // ---------- Progress bars ----------
   function renderBars(players) {
     els.scoreboard.innerHTML = '';
     bars.clear();
     players.forEach((name) => {
       const row = document.createElement('div');
-      row.style.cssText = 'margin-bottom: 6px; text-align: left;';
+      row.className = 'pvp-score-row';
 
-      const header = document.createElement('div');
-      header.style.cssText = 'display:flex; justify-content:space-between; font-size:0.72rem; color:#ccc;';
       const label = document.createElement('span');
-      label.textContent = name === username ? `${name} (you)` : name; // textContent: names are user input
-      const wpm = document.createElement('span');
-      wpm.textContent = '0 wpm';
-      header.append(label, wpm);
+      label.className = 'pvp-score-name';
+      label.textContent = name === username ? `${name} (you)` : name;
 
       const track = document.createElement('div');
-      track.style.cssText = 'height:6px; background:#222; border-radius:3px; overflow:hidden;';
+      track.className = 'pvp-score-track';
+      
       const fill = document.createElement('div');
-      fill.style.cssText = `height:100%; width:0%; background:${name === username ? '#22c55e' : '#3b82f6'}; transition: width ${PROGRESS_INTERVAL_MS}ms linear;`;
+      fill.className = `pvp-score-fill ${name === username ? 'self' : 'opponent'}`;
       track.appendChild(fill);
 
-      row.append(header, track);
+      const wpm = document.createElement('span');
+      wpm.className = 'pvp-score-wpm';
+      wpm.textContent = '0 wpm';
+
+      row.append(label, track, wpm);
       els.scoreboard.appendChild(row);
       bars.set(name, { row, fill, wpm });
     });
@@ -182,7 +172,7 @@ export function createRaceController({ username, els, onMatchOver }) {
     clearTimeout(intermissionTimer);
     sendProgress.cancel();
     destroyEngine();
-    els.countdown.style.display = 'none';
+    if (els.countdown) els.countdown.style.display = 'none';
   }
 
   return { handle, destroy };

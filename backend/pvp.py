@@ -7,7 +7,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 
-MAX_PLAYERS_PER_ROOM = 6
+MAX_PLAYERS_PER_ROOM = 4
 MAX_ROUNDS = 25
 COUNTDOWN_SECONDS = 5
 ROUND_GRACE_SECONDS = 30  # after the first finisher, wait this long for stragglers

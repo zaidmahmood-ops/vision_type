@@ -1,15 +1,6 @@
 // src/views/pvpTypingEngine.js
 const IGNORED_KEYS = new Set(['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab', 'Escape']);
 
-/**
- * @param {Object}      opts
- * @param {HTMLElement} opts.container   Element to render the words into
- * @param {string[]}    opts.words       Pre-generated word list (same for all players)
- * @param {'words'|'time'} opts.mode
- * @param {number}      opts.limit       Word count or seconds
- * @param {(p:Object)=>void} opts.onProgress  Called on every keystroke (consumer throttles)
- * @param {(stats:Object)=>void} opts.onFinish
- */
 export function createTypingEngine({
   container,
   words,
@@ -20,7 +11,6 @@ export function createTypingEngine({
 }) {
   const targetWords = mode === 'words' ? words.slice(0, limit) : words;
 
-  // Cumulative char counts so progress is smooth at letter level
   const charsBefore = [0];
   targetWords.forEach((w, i) => charsBefore.push(charsBefore[i] + w.length + 1));
   const totalChars = charsBefore[targetWords.length];
@@ -43,17 +33,30 @@ export function createTypingEngine({
     lineHeight: 0,
   };
 
-  // ---------- DOM ----------
-  container.innerHTML = `
-    <div class="live-hud"><span class="pvp-hud-counter"></span></div>
-    <div class="typing-viewport">
-      <div class="words-wrapper"><div class="cursor blink"></div></div>
-    </div>`;
-  container.classList.add('pvp-locked'); // hook for CSS (dim/blur while locked)
+  container.classList.add('pvp-locked');
 
-  const hudEl = container.querySelector('.pvp-hud-counter');
-  const wrapperEl = container.querySelector('.words-wrapper');
-  const cursorEl = container.querySelector('.cursor');
+  // Find or create the inner words wrapper inside the viewport container
+  let wrapperEl = container.querySelector('#pvp-words-wrapper') || container.querySelector('.pvp-words-wrapper');
+  if (!wrapperEl) {
+    wrapperEl = document.createElement('div');
+    wrapperEl.id = 'pvp-words-wrapper';
+    wrapperEl.className = 'pvp-words-wrapper';
+    container.appendChild(wrapperEl);
+  } else {
+    wrapperEl.innerHTML = '';
+  }
+
+  // Reset scroll from a previous round so every round starts on line 1
+  wrapperEl.style.transform = 'translateY(0px)';
+
+  let cursorEl = wrapperEl.querySelector('.pvp-cursor');
+  if (!cursorEl) {
+    cursorEl = document.createElement('div');
+    cursorEl.className = 'pvp-cursor blink';
+    wrapperEl.appendChild(cursorEl);
+  }
+
+  const hudEl = document.querySelector('.pvp-hud-counter');
 
   const frag = document.createDocumentFragment();
   const wordEls = targetWords.map((word) => {
@@ -71,7 +74,6 @@ export function createTypingEngine({
   wrapperEl.appendChild(frag);
   wordEls[0]?.classList.add('active');
 
-  // ---------- Stats ----------
   const getElapsed = () => {
     if (s.finalElapsed !== null) return s.finalElapsed;
     return s.started ? (performance.now() - s.startTs) / 1000 : 0;
@@ -127,8 +129,8 @@ export function createTypingEngine({
 
   const emit = () => onProgress(snapshot());
 
-  // ---------- HUD / cursor / scrolling ----------
   function updateHud() {
+    if (!hudEl) return;
     hudEl.textContent =
       mode === 'words'
         ? `${s.wordIndex} / ${targetWords.length}`
@@ -152,14 +154,13 @@ export function createTypingEngine({
     const top1 = wordEls[0].offsetTop;
     if (!s.lineHeight) {
       const second = wordEls.find((w) => w.offsetTop > top1);
-      if (!second) return; // not laid out yet (or only one line)
+      if (!second) return;
       s.lineHeight = second.offsetTop - top1;
     }
     const line = Math.round((active.offsetTop - top1) / s.lineHeight);
     wrapperEl.style.transform = `translateY(-${Math.max(0, line - 1) * s.lineHeight}px)`;
   }
 
-  // ---------- Clock ----------
   function startClock() {
     if (s.started) return;
     s.started = true;
@@ -177,7 +178,7 @@ export function createTypingEngine({
     }
     if (mode === 'time' && elapsed >= limit) return finish();
     updateHud();
-    if (mode === 'time') emit(); // bar advances with time even if idle
+    if (mode === 'time') emit();
   }
 
   function finish() {
@@ -193,14 +194,12 @@ export function createTypingEngine({
     onFinish(getStats());
   }
 
-  // ---------- Input ----------
   function onKeyDown(e) {
     const t = e.target;
     if (t instanceof HTMLElement && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
 
-    // INPUT LOCK: while locked (countdown / finished) ignore everything
     if (s.locked || s.finished) {
-      if (e.key === ' ') e.preventDefault(); // stop page scroll
+      if (e.key === ' ') e.preventDefault();
       return;
     }
     if (e.ctrlKey || e.metaKey || e.altKey || IGNORED_KEYS.has(e.key)) return;
@@ -249,7 +248,6 @@ export function createTypingEngine({
         }
         s.letterIndex++;
 
-        // Race finish: last word fully typed with no mistakes
         const isLastWord = s.wordIndex === targetWords.length - 1;
         if (mode === 'words' && isLastWord && s.letterIndex === letters.length && !active.querySelector('.incorrect')) {
           return finish();
@@ -273,7 +271,6 @@ export function createTypingEngine({
   window.addEventListener('resize', onResize);
   requestAnimationFrame(() => { checkLineShift(); updateCursor(); updateHud(); });
 
-  // ---------- Public API ----------
   return {
     lock() {
       s.locked = true;
@@ -283,7 +280,7 @@ export function createTypingEngine({
       if (s.finished) return;
       s.locked = false;
       container.classList.remove('pvp-locked');
-      startClock(); // race clock starts at GO
+      startClock();
     },
     getStats,
     destroy() {
@@ -291,7 +288,7 @@ export function createTypingEngine({
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('resize', onResize);
       container.classList.remove('pvp-locked');
-      container.innerHTML = '';
+      if (wrapperEl) wrapperEl.innerHTML = '<div class="pvp-cursor blink"></div>';
     },
   };
 }
