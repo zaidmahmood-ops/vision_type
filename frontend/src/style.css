@@ -2510,3 +2510,128 @@ body {
 .pvp-cursor.blink {
   animation: blink 1s infinite;
 }
+
+/* Settings Page Styles */
+
+.settings-container {
+  background-color: rgb(3, 3, 49);
+  min-height: 100vh;
+  color: #d1d0c5;
+  padding: 2.29rem;
+  font-family: monospace;
+}
+
+.settings-nav-bar {
+  display: flex;
+  gap: 1.72rem;
+  justify-content: center;
+  margin-bottom: 2.29rem;
+  flex-wrap: wrap;
+  color: #646669;
+  font-size: 1.03rem;
+}
+
+.settings-nav-bar a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.settings-search-wrapper {
+  max-width: 1190px;
+  margin: 0 auto 3.43rem auto;
+}
+
+#settings-search {
+  width: 100%;
+  padding: 0.92rem 1.14rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 4px;
+  color: #d1d0c5;
+  font-family: inherit;
+  font-size: 1.14rem;
+  outline: none;
+}
+
+.settings-content {
+  max-width: 1190px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3.43rem;
+}
+
+.section-title {
+  font-size: 1.72rem;
+  font-weight: 400;
+  color: #e2b714;
+  margin-bottom: 1.72rem;
+  display: flex;
+  align-items: center;
+  gap: 0.57rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.57rem;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.72rem;
+  gap: 2.29rem;
+}
+
+.setting-info {
+  flex: 1;
+}
+
+.setting-title {
+  font-weight: bold;
+  margin-bottom: 0.23rem;
+  font-size: 1.01rem;
+}
+
+.setting-desc {
+  font-size: 0.97rem;
+  color: #646669;
+}
+
+.button-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.23rem;
+  padding: 0.23rem;
+  max-width: 549px;
+  justify-content: flex-end;
+}
+
+.setting-btn {
+  background: transparent;
+  border: none;
+  color: #646669;
+  padding: 0.46rem 1.03rem;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 4px;
+  font-size: 0.97rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.setting-btn:hover {
+  color: #d1d0c5;
+}
+
+.setting-btn.active {
+  background: #e2b714;
+  color: rgb(3, 3, 49);
+  font-weight: bold;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d1d0c5;
+}
