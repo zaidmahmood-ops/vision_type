@@ -5,7 +5,7 @@ import { renderLeaderboard, setupLeaderboardEvents } from './views/leaderboard.j
 import { renderPvp, setupPvpEvents, cleanupPvp } from './views/pvp.js';
 import { renderSettings } from './views/settings.js';
 import { renderInfo } from './views/info.js';
-import { renderProfile, setupProfileEvents} from './views/user-profile.js';
+import { renderProfile, setupProfileEvents } from './views/user-profile.js';
 
 let currentRoute = 'typing';
 
@@ -68,9 +68,8 @@ export function navigateTo(route) {
 }
 
 export function initNavigation() {
-  // Navigation button listeners
+  // Navigation button listeners (static navbar elements)
   document.getElementById('shuffle-button')?.addEventListener('click', () => navigateTo('typing'));
-  document.getElementById('shuffle-button2')?.addEventListener('click', () => navigateTo('typing'));
   document.getElementById('leaderboard-button')?.addEventListener('click', () => navigateTo('leaderboard'));
   document.getElementById('pvp-button')?.addEventListener('click', () => navigateTo('pvp'));
   document.getElementById('settings-button')?.addEventListener('click', () => navigateTo('settings'));
@@ -78,24 +77,28 @@ export function initNavigation() {
 
   document.getElementById('login-button')?.addEventListener('click', () => navigateTo('login'));
   document.getElementById('logout-button')?.addEventListener('click', handleLogout);
-  document.getElementById('profile-button')?.addEventListener('click', () => navigateTo('user-profile'))
+  document.getElementById('profile-button')?.addEventListener('click', () => navigateTo('user-profile'));
   document.getElementById('notification-button')?.addEventListener('click', () => navigateTo('notifications'));
+
+  // Event Delegation for dynamic sub-views inside #view-container
+  const container = document.getElementById('view-container');
+  container?.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'auth-toggle-btn') {
+      if (currentRoute === 'login') {
+        navigateTo('register');
+      } else if (currentRoute === 'register') {
+        navigateTo('login');
+      }
+    }
+
+    if (e.target.closest('#shuffle-button2')) {
+      navigateTo('typing');
+    }
+  });
 
   // Run auth check on initial page load
   checkAuthState();
 }
-
-// Event Delegation for dynamic sub-views (like auth toggle links)
-const container = document.getElementById('view-container');
-container?.addEventListener('click', (e) => {
-  if (e.target && e.target.id === 'auth-toggle-btn') {
-    if (currentRoute === 'login') {
-      navigateTo('register');
-    } else if (currentRoute === 'register') {
-      navigateTo('login');
-    }
-  }
-});
 
 // Check if user is logged in and toggle visibility accordingly
 export function checkAuthState() {
@@ -113,7 +116,7 @@ export function checkAuthState() {
     if (navUsername) {
       navUsername.innerText = username;
     }
-  } else  {
+  } else {
     // Show login button, hide profile slot
     loginBtn?.classList.remove('hidden');
     userProfileSlot?.classList.add('hidden');

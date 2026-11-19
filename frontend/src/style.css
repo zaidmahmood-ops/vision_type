@@ -98,12 +98,11 @@ body::-webkit-scrollbar-thumb:active {
   color: rgb(160, 7, 71);
   text-decoration: none;
   position: relative;
+  margin-top: clamp(-1.25rem, -2vh, -0.35rem);
 }
 
 
-* {
-  outline: 1px solid rgba(255, 0, 128, 0.45);
-}
+
 
 #login-button {
   margin-left: auto;
@@ -381,7 +380,7 @@ body {
   color: rgba(233, 225, 219, 0.527);
   width: 80%;
   max-width: 1100px;
-  height: 8.4rem;
+  height: 8.2rem;
   overflow: hidden;
   margin: 2rem auto;
   padding: 15px;
@@ -420,6 +419,12 @@ body {
   position: top; /* Relative anchor for absolute #cursor */
   width: 100%;
 }
+
+#words-wrapper:focus {
+  outline: none;
+}
+
+
 
 /* ==========================================
    CONFIG BAR LAYOUT & STYLING

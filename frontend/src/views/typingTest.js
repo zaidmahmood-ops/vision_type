@@ -97,11 +97,11 @@ export async function initTypingGame() {
 
         <!-- SPLIT VIEWPORT ARCHITECTURE -->
         <div id="typing-viewport" class="typing-viewport">
-            <div id="words-wrapper" class="words-wrapper">
+            <div id="words-wrapper" tabindex="0" class="words-wrapper">
                 <div id="cursor" class="cursor blink"></div>
             </div>
         </div>
-        <button id="shuffle-button2" aria-label="Shuffle / Wordsets">↻&#xFE0E;</button>
+        <button id="shuffle-button2" type="button" aria-label="Shuffle / Wordsets">↻&#xFE0E;</button>
     `;
 
     cursorEl = document.getElementById('cursor');
@@ -122,6 +122,10 @@ export async function initTypingGame() {
     window.addEventListener('keydown', keydownHandler);
 
     checkLineShift();
+
+    // Focus the typing wrapper so pressing Tab jumps straight to #shuffle-button2
+    wordsWrapperEl?.focus({ preventScroll: true });
+
     setTimeout(() => updateCursor(), 50);
 }
 
@@ -468,6 +472,7 @@ function finishTest() {
     // 3. Transition to results screen view
     renderResultsScreen(statsData);
 }
+
 export function updateCursor() {
     const activeWord = wordElements[currentWordIndex];
     if (!activeWord || !cursorEl || !wordsWrapperEl) return;
