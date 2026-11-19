@@ -89,6 +89,21 @@ body::-webkit-scrollbar-thumb:active {
   position: relative;
 }
 
+#shuffle-button2 {
+  background: transparent;
+  border: none;
+  cursor: pointer;  
+  font-size: 2.5rem;
+  font-family: 'Brush Script MT', cursive, sans-serif;
+  color: rgb(160, 7, 71);
+  text-decoration: none;
+  position: relative;
+}
+
+
+* {
+  outline: 1px solid rgba(255, 0, 128, 0.45);
+}
 
 #login-button {
   margin-left: auto;
@@ -241,7 +256,7 @@ body::-webkit-scrollbar-thumb:active {
 .auth-error.hidden {
   display: none;
 }
-#shuffle-button:hover, #settings-button:hover, #pvp-button:hover, #leaderboard-button:hover, #i-button:hover, #login-button:hover  {
+#shuffle-button:hover, #shuffle-button2:hover #settings-button:hover, #pvp-button:hover, #leaderboard-button:hover, #i-button:hover, #login-button:hover  {
   color: #fdf9f9;
   
   

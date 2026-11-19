@@ -70,6 +70,7 @@ export function navigateTo(route) {
 export function initNavigation() {
   // Navigation button listeners
   document.getElementById('shuffle-button')?.addEventListener('click', () => navigateTo('typing'));
+  document.getElementById('shuffle-button2')?.addEventListener('click', () => navigateTo('typing'));
   document.getElementById('leaderboard-button')?.addEventListener('click', () => navigateTo('leaderboard'));
   document.getElementById('pvp-button')?.addEventListener('click', () => navigateTo('pvp'));
   document.getElementById('settings-button')?.addEventListener('click', () => navigateTo('settings'));

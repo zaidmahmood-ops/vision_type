@@ -101,6 +101,7 @@ export async function initTypingGame() {
                 <div id="cursor" class="cursor blink"></div>
             </div>
         </div>
+        <button id="shuffle-button2" aria-label="Shuffle / Wordsets">↻&#xFE0E;</button>
     `;
 
     cursorEl = document.getElementById('cursor');
