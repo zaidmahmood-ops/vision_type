@@ -6,8 +6,8 @@ import { recordTestResult, getLocalTestHistory, saveToLocalStorage } from '../se
 // CONFIGURATION & GLOBAL STATE VARIABLES
 // ==========================================
 let currentDatasetKey = 'english-200';
-let testMode = 'words'; // 'time' or 'words'
-let testLimit = 35;     // 10, 35, 70, 100 or 0 for infinite
+let testMode = 'time'; // 'time' or 'words'
+let testLimit = 10;     // 10, 35, 70, 100 or 0 for infinite
 let activeWordsPool = [];
 
 // ==========================================
