@@ -255,10 +255,8 @@ body::-webkit-scrollbar-thumb:active {
 .auth-error.hidden {
   display: none;
 }
-#shuffle-button:hover, #shuffle-button2:hover #settings-button:hover, #pvp-button:hover, #leaderboard-button:hover, #i-button:hover, #login-button:hover  {
-  color: #fdf9f9;
-  
-  
+#shuffle-button:hover, #shuffle-button2:hover, #settings-button:hover, #pvp-button:hover, #leaderboard-button:hover, #i-button:hover, #login-button:hover  {
+  color: #fdf9f9; 
 }
 
 
