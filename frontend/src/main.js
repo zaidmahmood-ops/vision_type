@@ -1,12 +1,9 @@
-import './style.css'
-import * as typingTestView from './views/typingTest.js';
-import {navigateTo, initNavigation} from './navigation.js';
+import { mount } from 'svelte';
+import './style.css';
+import App from './App.svelte';
 
+const app = mount(App, {
+  target: document.getElementById('app'),
+});
 
-document.addEventListener("DOMContentLoaded", () => {
-    initNavigation();
-    console.log("VisionType SPA initialized.");
-})
-
-
-navigateTo('typing');   
+export default app;

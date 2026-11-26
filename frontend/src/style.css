@@ -418,12 +418,20 @@ body {
   width: 100%;
 }
 
+<<<<<<< HEAD
 #words-wrapper:focus {
   outline: none;
 }
 
 
 
+=======
+.words-wrapper:focus,
+.words-wrapper:focus-visible {
+  outline: none;
+}
+
+>>>>>>> a6e0c62704b7c56ef23aa91138aef81ab1c35979
 /* ==========================================
    CONFIG BAR LAYOUT & STYLING
    ========================================== */
