@@ -406,6 +406,11 @@ body {
   width: 100%;
 }
 
+.words-wrapper:focus,
+.words-wrapper:focus-visible {
+  outline: none;
+}
+
 /* ==========================================
    CONFIG BAR LAYOUT & STYLING
    ========================================== */

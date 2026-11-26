@@ -15,13 +15,16 @@ const ROUND_PRESETS = [1, 3, 5, 7];
 const MAX_CUSTOM_ROUNDS = 25;
 let testRounds = 3;
 let roundsCustomMode = false;
+let errorMode = 'free-flow'; // 'stop-on-error' | 'free-flow'
+
+const PLAYER_TAG_COLORS = ['#fbbf24', '#38bdf8', '#a78bfa', '#34d399'];
 
 // Handle to the live race controller so navigation can tear it down
 let activeRace = null;
 
 /**
- * Call when leaving the PvP route (see navigation.js). Stops the engine's
- * keydown listener, timers and the WebSocket without triggering UI callbacks.
+- Call when leaving the PvP route (see navigation.js). Stops the engine's
+- keydown listener, timers and the WebSocket without triggering UI callbacks.
  */
 export function cleanupPvp() {
   activeRace?.destroy();
@@ -91,6 +94,12 @@ export function renderPvp() {
           <div class="pvp-label">Rounds:</div>
           <div id="rounds-container" class="pvp-rounds-flex"></div>
 
+          <div class="pvp-label">Error Handling:</div>
+          <div class="pvp-flex-row" id="error-mode-group">
+            <button type="button" class="config-option-btn ${errorMode === 'free-flow' ? 'btn-primary' : 'btn-secondary'} pvp-config-pill" data-error-mode="free-flow">Free-Flow Accuracy</button>
+            <button type="button" class="config-option-btn ${errorMode === 'stop-on-error' ? 'btn-primary' : 'btn-secondary'} pvp-config-pill" data-error-mode="stop-on-error">Stop-on-Error</button>
+          </div>
+
           <div class="pvp-action-row">
             <button id="back-to-custom-btn" class="btn-secondary pvp-btn-flex1">Back</button>
             <button id="confirm-create-btn" class="btn-primary pvp-btn-success">Create & Launch 🚀</button>
@@ -107,7 +116,7 @@ export function renderPvp() {
           </div>
 
           <div class="pvp-config-badge">
-            Config: <strong id="display-config" class="pvp-white-text">${currentDatasetName} (${testMode}: ${testLimit})</strong>
+            Config: <strong id="display-config" class="pvp-white-text">${currentDatasetName} (${testMode}: ${testLimit} · ${errorMode === 'stop-on-error' ? 'Stop-on-Error' : 'Free-Flow'})</strong>
           </div>
 
           <button id="start-match-btn" class="btn-primary pvp-start-match-btn">Start Match 🚀</button>
@@ -137,6 +146,7 @@ export function setupPvpEvents(container) {
   const datasetLabel = container.querySelector('#current-dataset-label');
   const modeGroup = container.querySelector('.mode-group');
   const suboptionsContainer = container.querySelector('#suboptions-container');
+  const errorModeGroup = container.querySelector('#error-mode-group');
   
   const submitJoinBtn = container.querySelector('#submit-join-btn');
   const roomCodeInput = container.querySelector('#room-code-input');
@@ -165,6 +175,26 @@ export function setupPvpEvents(container) {
       onMatchOver: () => {
         restoreLobbyView();
       },
+    });
+  }
+
+  function syncCompactScoreboardPlayers() {
+    const scoreboard = container.querySelector('#pvp-scoreboard');
+    if (!scoreboard) return;
+    const rows = Array.from(scoreboard.children);
+    rows.slice(0, 4).forEach((row, idx) => {
+      const color = PLAYER_TAG_COLORS[idx] || '#fbbf24';
+      const barFill = row.querySelector('[style*="background"]');
+      if (barFill) {
+        barFill.style.backgroundColor = color;
+      }
+      if (!row.querySelector('.pvp-compact-tag')) {
+        const badge = document.createElement('span');
+        badge.className = 'pvp-compact-tag';
+        badge.style.cssText = `display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.78rem; margin-right: 6px; color: ${color};`;
+        badge.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 2px; background: ${color}; display: inline-block;"></span>P${idx + 1}`;
+        row.prepend(badge);
+      }
     });
   }
 
@@ -216,19 +246,37 @@ export function setupPvpEvents(container) {
     }
   }
 
+  errorModeGroup?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-error-mode]');
+    if (!btn) return;
+    errorMode = btn.getAttribute('data-error-mode');
+    errorModeGroup.querySelectorAll('[data-error-mode]').forEach((b) => {
+      const active = b.getAttribute('data-error-mode') === errorMode;
+      b.className = `config-option-btn ${active ? 'btn-primary' : 'btn-secondary'} pvp-config-pill`;
+    });
+  });
+
   function buildRoomConfig() {
     return {
       dataset_key: currentDatasetKey,
       test_mode: testMode,
       test_limit: testLimit > 0 ? testLimit : (testMode === 'words' ? 35 : 30),
       rounds: testRounds,
+      error_mode: errorMode,
     };
   }
 
   function applyRoomConfig(cfg) {
+    if (cfg.dataset_key) currentDatasetKey = cfg.dataset_key;
+    if (cfg.error_mode) errorMode = cfg.error_mode;
     const name = DATASET_REGISTRY[cfg.dataset_key]?.name || cfg.dataset_key;
+    const modeLabel = (cfg.error_mode || errorMode) === 'stop-on-error' ? 'Stop-on-Error' : 'Free-Flow';
     if (displayConfig) {
-      displayConfig.textContent = `${name} (${cfg.test_mode}: ${cfg.test_limit} · ${cfg.rounds} round${cfg.rounds === 1 ? '' : 's'})`;
+      displayConfig.textContent = `${name} (${cfg.test_mode}: ${cfg.test_limit} · ${cfg.rounds} round${cfg.rounds === 1 ? '' : 's'} · ${modeLabel})`;
+    }
+    const activeWordsetEl = container.querySelector('#pvp-active-wordset');
+    if (activeWordsetEl) {
+      activeWordsetEl.textContent = name;
     }
   }
 
@@ -416,15 +464,19 @@ export function setupPvpEvents(container) {
         if (data.config) applyRoomConfig(data.config);
 
         if (data.event === 'start_game') {
+          const activeDatasetName = DATASET_REGISTRY[currentDatasetKey]?.name || currentDatasetKey;
           const mainWrapper = container.querySelector('#pvp-main-wrapper');
           if (mainWrapper) {
             mainWrapper.outerHTML = `
-              <div style="width: 100%; max-width: 1100px; margin: 2rem auto 1rem; padding: 0 15px; box-sizing: border-box;" id="pvp-active-race-root">
-                <div id="pvp-round-label" style="color: #fbbf24; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; text-align: center; font-family: 'JetBrains Mono', monospace;">Get ready…</div>
-                <div id="pvp-scoreboard" style="width: 100%; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 10px;"></div>
+              <div style="width: 100%; max-width: 680px; margin: 1.5rem auto 0.75rem; padding: 0 15px; box-sizing: border-box;" id="pvp-active-race-root">
+                <div id="pvp-scoreboard" style="width: 100%; margin: 0 auto 1rem auto; display: flex; flex-direction: column; gap: 5px;"></div>
               </div>
-              <div class="pvp-live-hud" style="width: 100%; max-width: 1100px; margin: 0 auto 8px auto; box-sizing: border-box; padding: 0 15px;">
-                <span class="pvp-hud-counter">0 / ${testLimit}</span>
+              <div class="pvp-live-hud" style="width: 100%; max-width: 1100px; margin: 0 auto 8px auto; box-sizing: border-box; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span class="pvp-hud-counter">0 / ${testLimit}</span>
+                  <span id="pvp-round-label" style="color: #fbbf24; font-size: 0.9rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;">Round 1/${testRounds}</span>
+                </div>
+                <span id="pvp-active-wordset" style="font-size: 0.8rem; opacity: 0.85;">${activeDatasetName}</span>
               </div>
               <div style="position: relative; width: calc(100% - 30px); max-width: 1100px; margin: 0 auto;">
                 <div class="pvp-typing-viewport" id="pvp-typing-viewport">
@@ -439,9 +491,11 @@ export function setupPvpEvents(container) {
 
           race = initRaceController();
           activeRace = race;
+          syncCompactScoreboardPlayers();
         }
 
         race?.handle(data);
+        syncCompactScoreboardPlayers();
       },
       onError: () => leaveRoomStateOnly(),
       onClose: () => leaveRoomStateOnly(),
